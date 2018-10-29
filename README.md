@@ -1,4 +1,4 @@
-# reinforcement_learning_algo_trading
+# Reinforcement Learning for Algorithmic Trading
 
 ## Getting Started
 Python 3.7.
