@@ -1,5 +1,6 @@
 import gym
 
+from gym import spaces
 
 class TradingEnv(gym.Env):
     def __init__(self, train_data, init_capital):
@@ -14,9 +15,9 @@ class TradingEnv(gym.Env):
         self.current_capital = None
 
         #5 options, 0%, 25%, 50%, 75% or 100% for each stock
-        self.action_space = spaces.Discrete(5**self.n_stock)
-        #observation space is set
-        self.observation_space = spaces.MultiDiscrete(5**self.n_stock + init_capital*2)
-
-
-    
+        #actually just do buy sell hold for now
+        self.action_space = spaces.Discrete(3*self.n_stocks)
+        #observation space
+        capital_range = [[0, 2*init_capital]]
+        stock_return_rate_range = [[-5, 5]]
+        self.observation_space = spaces.MultiDiscrete(stock_return_rate_range + capital_range)
