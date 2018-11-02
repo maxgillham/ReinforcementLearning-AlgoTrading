@@ -1,6 +1,6 @@
 import pandas as pd
 
-#main function to get the return rates for the three given stocks over time
+#main method to get the return rates for the three given stocks over time
 def get_data():
     ibm = compute_return_rates(sort_by_recent(load_csv('data/daily_IBM.csv')))
     msft = compute_return_rates(sort_by_recent(load_csv('data/daily_MSFT.csv')))
@@ -24,7 +24,16 @@ def split_data(df):
 
 #convert to rate of return
 def compute_return_rates(df):
-    return ((df['close'] - df['open']) / df['open'])
+    return ((df['close'] - df['open']) / df['open'])*100
+
+#rounds rate of return to nearest 5th to discritize values
+#return rates are now 0.5, 1.0, -1.5, ext...
+def round_return_rate(df):
+    return round(df*2)/2
+
+#will return max and min for when defining space ranges
+def get_max_and_min(df):
+    return df.values.max(), df.values.min()
 
 if __name__ == '__main__':
     #example on how you can call it
