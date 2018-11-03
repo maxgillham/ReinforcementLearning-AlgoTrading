@@ -19,6 +19,7 @@ def initialize_Q():
         Q[state] = {}
         for action in range(env.action_space.n):
             Q[state][action] = 0
+
     return Q
 
 
@@ -38,8 +39,8 @@ if __name__ == '__main__':
 
     Q = initialize_Q()
 
-    print(Q)
-    
+    print(Q['000'])
+
     #number of episoides
     #episoides = 10
 
