@@ -12,7 +12,7 @@ def initialize_Q():
     #each episoide is a state, making
     #into string for dictionary purpose
     states = []
-    for i in range(episoides):
+    for i in range(env.observation_space.n):
         states.append(str(i).zfill(3))
 
     for state in states:
@@ -39,7 +39,7 @@ if __name__ == '__main__':
 
     Q = initialize_Q()
 
-    print(Q['000'])
+    print(Q)
 
     #number of episoides
     #episoides = 10
