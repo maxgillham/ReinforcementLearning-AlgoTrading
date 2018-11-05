@@ -1,6 +1,7 @@
 import gym
 
 from gym import spaces
+from gym.utils import seeding
 from utils import *
 
 class TradingEnv(gym.Env):
@@ -27,5 +28,10 @@ class TradingEnv(gym.Env):
         #self.observation_space = spaces.MultiDiscrete(capital_range + stock_return_rate_range)
         self.observation_space = spaces.Discrete(capital_range)
 
-        #self._seed()
+        #seed and reset
+        self._seed()
         #self._reset()
+
+    def _seed(self, seed=None):
+        self.np_random, seed = seeding.np_random(seed)
+        return[seed]
