@@ -1,4 +1,5 @@
 import gym
+import numpy as np
 
 from gym import spaces
 from gym.utils import seeding
@@ -17,21 +18,37 @@ class TradingEnv(gym.Env):
         self.current_capital = None
 
         #5 options, 0%, 25%, 50%, 75% or 100% for each stock
-        #actually just do buy sell hold for now
-        self.action_space = spaces.Discrete(3*self.n_stocks)
+        #actually just make actition 0 1 or 2, as invest all money in 
+        #IBM, invest all in Microsoft ext..
+        self.action_space = spaces.Discrete(1*self.n_stocks)
         #observation space
-        capital_range = 2*init_capital
-        stock_return_rate_range = get_max_and_min(self.stock_return_rate_history)[0]
+        capital_range = [0, 2*init_capital]
+        stock_return_rate_range = [0, get_max_and_min(self.stock_return_rate_history)[0]]
         #self.observation_space = spaces.Tuple((
             #spaces.Discrete(stock_return_rate_range),
             #spaces.Discrete(capital_range)))
-        #self.observation_space = spaces.MultiDiscrete(capital_range + stock_return_rate_range)
-        self.observation_space = spaces.Discrete(capital_range)
+        self.observation_space = spaces.MultiDiscrete([capital_range, stock_return_rate_range])
+        #self.observation_space = spaces.Discrete(capital_range)
 
         #seed and reset
         self._seed()
-        #self._reset()
+        self._reset()
 
     def _seed(self, seed=None):
         self.np_random, seed = seeding.np_random(seed)
         return[seed]
+
+    def _reset(self):
+        self.current_step = 0
+        #self.stock_owned = [0]*self.n_stocks
+        self.stock_return_rate = self.stock_return_rate_history.iloc[self.current_step]
+        self.current_capital = self.init_capital
+        return self._get_obs()
+
+    def _get_obs(self):
+        obs = []
+        #obs.extend(self.stock_owned)
+        obs.extend(list(self.stock_return_rate))
+        obs.append(self.current_capital)
+        return obs
+
