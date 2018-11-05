@@ -6,23 +6,7 @@ from Q_table import QLearningTable
 from utils import *
 
 episoides = 1000
-'''
-def initialize_Q():
-    Q = {}
 
-    #each episoide is a state, making
-    #into string for dictionary purpose
-    states = []
-    for i in range(env.observation_space.n):
-        states.append(str(i).zfill(3))
-
-    for state in states:
-        Q[state] = {}
-        for action in range(env.action_space.n):
-            Q[state][action] = 0
-
-    return Q
-'''
 def update():
     #by default the training is set to be 100 episodes per training
     for episode in range(100):
@@ -37,7 +21,7 @@ def update():
             action = Q.choose_action(str(observation))
 
             # RL take action and get next observation and reward
-            # return next step observation_, reward from env 
+            # return next step observation_, reward from env
 
             # RL learn from this transition
             Q.learn(str(observation), action, reward, str(observation_))
@@ -63,8 +47,8 @@ if __name__ == '__main__':
     #Q = np.zeros((env.observation_space.n, env.action_space.n))
     #Q = initialize_Q()
     Q = QLearningTable(actions=list(range(env.action_space.n)))
-    
-    print(Q)
+
+    print(Q.q_table)
 
     #number of episoides
     #episoides = 10
