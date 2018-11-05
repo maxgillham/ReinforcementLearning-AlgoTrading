@@ -37,18 +37,14 @@ def update():
 if __name__ == '__main__':
     train_data = round_return_rate(get_data())
     env = TradingEnv(train_data, init_capital=100)
-    max, min = get_max_and_min(train_data)
-    #print('Max return rate', max, 'Min return rate', min)
-    #print('Num Stocks', env.n_stocks)
-    #print('Num Steps', env.n_steps)
-    #print('Init Invest', env.init_capital)
+
+    print(env._get_obs())
 
     #init Q table
-    #Q = np.zeros((env.observation_space.n, env.action_space.n))
-    #Q = initialize_Q()
     Q = QLearningTable(actions=list(range(env.action_space.n)))
 
     print(Q.q_table)
+    print(Q.choose_action(env._get_obs()))
 
     #number of episoides
     #episoides = 10
