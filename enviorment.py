@@ -18,7 +18,7 @@ class TradingEnv(gym.Env):
         self.current_capital = None
 
         #5 options, 0%, 25%, 50%, 75% or 100% for each stock
-        #actually just make actition 0 1 or 2, as invest all money in 
+        #actually just make actition 0 1 or 2, as invest all money in
         #IBM, invest all in Microsoft ext..
         self.action_space = spaces.Discrete(1*self.n_stocks)
         #observation space
@@ -51,22 +51,18 @@ class TradingEnv(gym.Env):
         obs.extend(list(self.stock_return_rate))
         obs.append(self.current_capital)
         return obs
-    
+
     def _step(self, action):
         #previous capital is now capital before action
         prev_capital = self.current_capital
+        #new value is return rate of chosen stock times previous capital
+        new_val = (self.stock_return_rate[action]+1) * prev_capital
+        #current reward , needs oto be log
+        reward = new_val - prev_capital
         #increment time step for data
         self.current_step += 1
         #return rate is return rate for that day
         self.stock_return_rate = self.stock_return_rate_history.iloc[self.current_step]
-        print('return rate for action', self.stock_return_rate[action])
-        new_val = (self.stock_return_rate[action] + 1) * prev_capital
-        #current reward , needs oto be log
-        print('new capital', new_val, 'old capital', prev_capital)
-        reward = new_val - prev_capital
         self.current_capital = new_val
-        done_flag = (self.current_step == self.n_steps - 2)
+        done_flag = (self.current_step == self.n_steps - 1)
         return self._get_obs(), reward, done_flag
-
-
-
