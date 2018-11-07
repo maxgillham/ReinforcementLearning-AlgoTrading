@@ -9,20 +9,25 @@ episoides = 1000
 
 def update():
     #by default the training is set to be 100 episodes per training
-    for episode in range(100):
+    for episode in range(5):
         # initial observation
-        observation = env.reset()
+        env._reset()
 
         while True:
             # update env
             # did not finish TradingEnv for fresh env yet
 
             # RL choose action based on observation
-            action = Q.choose_action(str(observation))
+            action = Q.choose_action(env._get_obs())
+            print('action', action)
+            print('with capital', env.current_capital)
+            #observation = env._get_obs()
 
             # RL take action and get next observation and reward
             # return next step observation_, reward from env
+            observation_, reward, done = env._step(action)
 
+            print('reward', reward)
             # RL learn from this transition
             Q.learn(str(observation), action, reward, str(observation_))
 
@@ -38,17 +43,12 @@ if __name__ == '__main__':
     train_data = round_return_rate(get_data())
     env = TradingEnv(train_data, init_capital=100)
 
-    print(env._get_obs())
-
     #init Q table
     Q = QLearningTable(actions=list(range(env.action_space.n)))
 
-    print(Q.q_table)
-    print(Q.choose_action(env._get_obs()))
+    #print(Q.q_table)
+    #print(Q.choose_action(env._get_obs()))
 
-    #number of episoides
-    #episoides = 10
-
-    #for _ in range(episoides):
-        #state = env.reset()
-        #state =
+    update()
+    
+   
