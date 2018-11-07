@@ -39,7 +39,7 @@ class TradingEnv(gym.Env):
         return[seed]
 
     def _reset(self):
-        self.current_step = 0
+        self.current_step = 1
         #self.stock_owned = [0]*self.n_stocks
         self.stock_return_rate = self.stock_return_rate_history.iloc[self.current_step]
         self.current_capital = self.init_capital
@@ -51,4 +51,22 @@ class TradingEnv(gym.Env):
         obs.extend(list(self.stock_return_rate))
         obs.append(self.current_capital)
         return obs
+    
+    def _step(self, action):
+        #previous capital is now capital before action
+        prev_capital = self.current_capital
+        #increment time step for data
+        self.current_step += 1
+        #return rate is return rate for that day
+        self.stock_return_rate = self.stock_return_rate_history.iloc[self.current_step]
+        print('return rate for action', self.stock_return_rate[action])
+        new_val = (self.stock_return_rate[action] + 1) * prev_capital
+        #current reward , needs oto be log
+        print('new capital', new_val, 'old capital', prev_capital)
+        reward = new_val - prev_capital
+        self.current_capital = new_val
+        done_flag = (self.current_step == self.n_steps - 2)
+        return self._get_obs(), reward, done_flag
+
+
 
