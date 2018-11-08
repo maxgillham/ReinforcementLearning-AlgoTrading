@@ -35,7 +35,7 @@ class QLearningTable:
             q_target = r + self.gamma * self.q_table.loc[s_, :].max()  # next state is not terminal
         else:
             q_target = r  # next state is terminal
-        self.q_table.loc[s, a] += self.lr * (q_target - q_predict)  # update
+        self.q_table.loc[s, a] += round(self.lr * (q_target - q_predict), 3)  # update
 
     def check_state_exist(self, state):
         if str(state) not in self.q_table.index:
