@@ -24,16 +24,18 @@ def split_data(df):
 
 #convert to rate of return
 def compute_return_rates(df):
-    return ((df['close'] - df['open']) / df['open'])
+    return ((df['close'] - df['open']) / df['open'])*100
 
 #rounds rate of return to 4 decimal palces to discritize values
 def round_return_rate(df):
-    return df.round(4)
+    return (df.round())/100
 
 #will return max and min for when defining space ranges
 def get_max_and_min(df):
     return df.values.max(), df.values.min()
 
+def round_to_base(value, base):
+    return int(base * round(value/base))
 if __name__ == '__main__':
     #example on how you can call it
     return_rates = get_data()
