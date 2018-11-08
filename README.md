@@ -3,21 +3,27 @@
 ## Getting Started
 **Python 3.6.5**    
 
-I would reccomend creating a virutal enviorment named `env` inside the repository so its included already in the .gitignore
-You can create a virtual enviorment using [Virtualenv]("https://virtualenv.pypa.io/en/latest/") if you don't already have it installed in your current python enviorment.  The current dependancies are in `requirements-cpu.txt` and can be installed by the following commands.  
+I would reccomend creating a virtual enviorment, name it `env` so it is included already in the .gitignore file.  
+You can create a virtual enviorment using [Virtualenv]("https://virtualenv.pypa.io/en/latest/") if you don't already have it installed in your current python interpreter.  The current dependancies are in `requirements-cpu.txt` or gpu equivalent, and can be installed by the following commands.  
 ```
 pip install virtualenv
 virtualenv env
 
-//For MacOs or Linux users
 source activate env
-
-//For Windows
-cd ./env/Scripts
-activate.bat
 
 pip install -r requirements-cpu.txt
 ```  
-The equivalent requirements for gpu support are inside `requirements-gpu.txt` but this isn't necesary unless tensorflow is used.  
-To make sure you are configured, run `python main.py`.  
+The equivalent requirements for gpu support are inside `requirements-gpu.txt` but this isn't necessary until TensorFlow is introduced (deep Q - learning? wink wink nudge nudge).  
+## Training
+Once the enviorment is configured, run `main.py`.  This will train the Q learning agent and plot some results.  An overview of the code architechure is found below.  
+* `main.py`
+  * This is where you can specify episodes and initial investment
+* `enviorment.py`
+  * Here you can manipulate action space, observation space, reward function and done done flag
+* `Q_table.py`
+  * This class defines learning rate, gamma, epsilon parameters and contains choose action and learning methods
+* `utils.py`
+  * A series of methods used to import and process data  
 
+Here is an example graph, where the initial investment at each episode was set at $100 and the resulting capital attained after completing each episode is plotted.  
+![example](./img/example_q.png)
