@@ -1,4 +1,5 @@
 import gym
+import math
 import numpy as np
 
 from gym import spaces
@@ -56,13 +57,16 @@ class TradingEnv(gym.Env):
         #previous capital is now capital before action
         prev_capital = self.current_capital
         #new value is return rate of chosen stock times previous capital
-        new_val = (self.stock_return_rate[action]+1) * prev_capital
+        new_val = round((self.stock_return_rate[action]+1) * prev_capital)
         #current reward , needs oto be log
-        reward = new_val - prev_capital
+        if new_val > prev_capital:
+            reward = round(math.log(new_val - prev_capital))
+        else:
+            reward = -1
         #increment time step for data
         self.current_step += 1
         #return rate is return rate for that day
         self.stock_return_rate = self.stock_return_rate_history.iloc[self.current_step]
-        self.current_capital = new_val
+        self.current_capital = round_to_base(value = new_val, base=25)
         done_flag = (self.current_step == self.n_steps - 1)
         return self._get_obs(), reward, done_flag
