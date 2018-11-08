@@ -42,15 +42,16 @@ class TradingEnv(gym.Env):
     def _reset(self):
         self.current_step = 1
         #self.stock_owned = [0]*self.n_stocks
-        self.stock_return_rate = self.stock_return_rate_history.iloc[self.current_step]
+        self.stock_return_rate = self.stock_return_rate_history.loc[self.current_step]
         self.current_capital = self.init_capital
         return self._get_obs()
 
     def _get_obs(self):
         obs = []
         #obs.extend(self.stock_owned)
-        obs.extend(list(self.stock_return_rate))
-        obs.append(self.current_capital)
+        obs.append(round_to_base(self.current_capital, base=5))
+        return_rate_list_temp = list(self.stock_return_rate)
+        obs.extend([ '%.4f' % elem for elem in list(self.stock_return_rate)])
         return obs
 
     def _step(self, action):
@@ -58,15 +59,18 @@ class TradingEnv(gym.Env):
         prev_capital = self.current_capital
         #new value is return rate of chosen stock times previous capital
         new_val = round((self.stock_return_rate[action]+1) * prev_capital)
+
         #current reward , needs oto be log
         if new_val > prev_capital:
-            reward = round(math.log(new_val - prev_capital))
+            reward = round((new_val - prev_capital))
         else:
             reward = -1
+
         #increment time step for data
         self.current_step += 1
         #return rate is return rate for that day
-        self.stock_return_rate = self.stock_return_rate_history.iloc[self.current_step]
-        self.current_capital = round_to_base(value = new_val, base=25)
+        self.stock_return_rate = self.stock_return_rate_history.loc[self.current_step]
+        self.current_capital = round_to_base(value = new_val, base=5)
+
         done_flag = (self.current_step == self.n_steps - 1)
         return self._get_obs(), reward, done_flag
