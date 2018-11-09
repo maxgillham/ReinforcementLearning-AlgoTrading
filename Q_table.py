@@ -20,7 +20,7 @@ class QLearningTable:
         # action selection
         if np.random.uniform() < self.epsilon:
             # choose best action
-            state_action = self.q_table.loc[observation, :]
+            state_action = self.q_table.loc[str(observation), :]
             # some actions may have the same value, randomly choose on in these actions
             action = np.random.choice(state_action[state_action == np.max(state_action)].index)
         else:
@@ -35,15 +35,15 @@ class QLearningTable:
             q_target = r + self.gamma * self.q_table.loc[s_, :].max()  # next state is not terminal
         else:
             q_target = r  # next state is terminal
-        self.q_table.loc[s, a] += self.lr * (q_target - q_predict)  # update
+        self.q_table.loc[s, a] += round(self.lr * (q_target - q_predict), 3)  # update
 
     def check_state_exist(self, state):
-        if state not in self.q_table.index:
+        if str(state) not in self.q_table.index:
             # append new state to q table
             self.q_table = self.q_table.append(
                 pd.Series(
                     [0]*len(self.actions),
                     index=self.q_table.columns,
-                    name=state,
+                    name=str(state),
                 )
             )

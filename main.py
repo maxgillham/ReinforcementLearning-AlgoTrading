@@ -1,43 +1,34 @@
+import time
 import numpy as np
+import matplotlib.pyplot as plt
 
 from enviorment import TradingEnv
 from gym import spaces
 from Q_table import QLearningTable
 from utils import *
 
-episoides = 1000
-'''
-def initialize_Q():
-    Q = {}
+episodes = 100
 
-    #each episoide is a state, making
-    #into string for dictionary purpose
-    states = []
-    for i in range(env.observation_space.n):
-        states.append(str(i).zfill(3))
-
-    for state in states:
-        Q[state] = {}
-        for action in range(env.action_space.n):
-            Q[state][action] = 0
-
-    return Q
-'''
 def update():
+    ending_cap = []
     #by default the training is set to be 100 episodes per training
-    for episode in range(100):
+    for episode in range(episodes):
+        start = time.time()
+        print('\n***Episoide Number*** ===>', episode)
         # initial observation
-        observation = env.reset()
+        observation = env._reset()
 
-        while True:
+        done = False
+        while not done:
             # update env
             # did not finish TradingEnv for fresh env yet
 
             # RL choose action based on observation
-            action = Q.choose_action(str(observation))
+            action = Q.choose_action(env._get_obs())
 
             # RL take action and get next observation and reward
-            # return next step observation_, reward from env 
+            # return next step observation_, reward from env
+            observation_, reward, done = env._step(action)
 
             # RL learn from this transition
             Q.learn(str(observation), action, reward, str(observation_))
@@ -47,28 +38,28 @@ def update():
 
             # break while loop when end of this episode
             if done:
+                end = time.time()
+                print('Completed episoide in ', end - start, ' secconds.\nFinal portfolio value: $', env.current_capital)
+                ending_cap.append(env.current_capital)
                 break
+    plt.scatter(np.arange(episodes), ending_cap, marker='.', c='k' )
+    plt.title('Capital Attained at Each Episode')
+    plt.xlabel('Episode')
+    plt.ylabel('Capital Attained')
+    plt.show()
+    return
 
 
 if __name__ == '__main__':
     train_data = round_return_rate(get_data())
+
+    #init trading env
     env = TradingEnv(train_data, init_capital=100)
-    max, min = get_max_and_min(train_data)
-    #print('Max return rate', max, 'Min return rate', min)
-    #print('Num Stocks', env.n_stocks)
-    #print('Num Steps', env.n_steps)
-    #print('Init Invest', env.init_capital)
 
     #init Q table
-    #Q = np.zeros((env.observation_space.n, env.action_space.n))
-    #Q = initialize_Q()
     Q = QLearningTable(actions=list(range(env.action_space.n)))
-    
-    print(Q)
 
-    #number of episoides
-    #episoides = 10
+    #train method
+    update()
 
-    #for _ in range(episoides):
-        #state = env.reset()
-        #state =
+    print(Q.q_table)
