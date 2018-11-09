@@ -1,3 +1,4 @@
+import time
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -12,7 +13,8 @@ def update():
     ending_cap = []
     #by default the training is set to be 100 episodes per training
     for episode in range(episodes):
-        print('Episoide ', episode)
+        start = time.time()
+        print('\n***Episoide Number*** ===>', episode)
         # initial observation
         observation = env._reset()
 
@@ -36,7 +38,8 @@ def update():
 
             # break while loop when end of this episode
             if done:
-                print('Completed episoide...\nEnding episoide with: $', env.current_capital)
+                end = time.time()
+                print('Completed episoide in ', end - start, ' secconds.\nFinal portfolio value: $', env.current_capital)
                 ending_cap.append(env.current_capital)
                 break
     plt.scatter(np.arange(episodes), ending_cap, marker='.', c='k' )
