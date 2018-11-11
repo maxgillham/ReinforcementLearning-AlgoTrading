@@ -7,7 +7,7 @@ from gym import spaces
 from Q_table import QLearningTable
 from utils import *
 
-episodes = 5
+episodes = 100
 
 def update():
     ending_cap = []
