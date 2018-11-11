@@ -5,14 +5,13 @@ import matplotlib.pyplot as plt
 
 from enviorment import TradingEnv
 from gym import spaces
-from Q_table import QLearningTable
+from deep_q_agent import deepQ
 
 from utils import *
 
-episodes = 100
+episodes = 10
 
-def update():
-    ending_cap = []
+def train():
     #by default the training is set to be 100 episodes per training
     for episode in range(episodes):
         start = time.time()
@@ -33,7 +32,7 @@ def update():
             observation_, reward, done = env._step(action)
 
             # RL learn from this transition
-            Q.learn(str(observation), action, reward, str(observation_))
+            Q.remember(observation, action, reward, observation_, done)
 
             # swap observation
             observation = observation_
@@ -42,27 +41,52 @@ def update():
             if done:
                 end = time.time()
                 print('Completed episoide in ', end - start, ' secconds.\nFinal portfolio value: $', env.current_capital)
-                ending_cap.append(env.current_capital)
-                print('Q Table size', Q.q_table.shape)
                 break
-    plt.scatter(np.arange(episodes), ending_cap, marker='.', c='k' )
-    plt.title('Capital Attained at Each Episode')
-    plt.xlabel('Episode')
-    plt.ylabel('Capital Attained')
+            if len(Q.memory) > 32:
+                Q.learn()
+    return
+
+def test():
+    step_num = []
+    portfolio_val = []
+
+    observation = env._reset()
+    done = False
+
+    while not done:
+        
+        action = test_Q.test_pred(observation)
+        observation_, reward, done = env._step(action)
+        observation = observation_
+        step_num.append(env.current_step)
+        portfolio_val.append(env.current_capital)
+        if done:
+            print('ending at:', env.current_capital)
+            break
+    plt.scatter(step_num, portfolio_val)
     plt.show()
     return
 
 
+
 if __name__ == '__main__':
-    train_data = round_return_rate(get_data())
+
+    train_data, test_data = split_data(round_return_rate(get_data()))
+    #must index at starting at 0
+    train_data.index -= 100
 
     #init trading env
     env = TradingEnv(train_data, init_capital=100)
 
-    #init Q table
-    Q = QLearningTable(actions=list(range(env.action_space.n)))
+    #init deep q agent
+    Q = deepQ(state_size=len(env._get_obs()), action_size=env.action_space.n)
 
     #train method
-    update()
+    train()
 
-    print(Q.q_table)
+    Q.save_model()
+
+    test_env = TradingEnv(test_data, init_capital=100)
+    test_Q = deepQ(state_size=len(test_env._get_obs()), action_size=env.action_space.n)
+    test_Q.load_model()
+    test()
