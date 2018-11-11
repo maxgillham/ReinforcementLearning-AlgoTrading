@@ -49,10 +49,11 @@ class TradingEnv(gym.Env):
 
     def _get_obs(self):
         obs = []
-        #obs.extend(self.stock_owned)
         obs.append(round_to_base(self.current_capital, base=5))
-        return_rate_list_temp = list(self.stock_return_rate)
-        obs.extend([ '%.4f' % elem for elem in list(self.stock_return_rate)])
+        #origonally did this
+        #return_rate_list_temp = list(self.stock_return_rate)
+        #obs.extend([ '%.4f' % elem for elem in list(self.stock_return_rate)])
+        for i in range(len(self.stock_return_rate)): obs.append(self.stock_return_rate.values[i])
         return obs
 
     def _step(self, action):
@@ -68,7 +69,7 @@ class TradingEnv(gym.Env):
         self.stock_return_rate = self.stock_return_rate_history.loc[self.current_step]
         self.current_capital = round_to_base(value = new_val, base=5)
         #done if on the last step, or we have doubled out investment
-        if self.current_step == self.n_steps - 1 or self.current_capital >= 2*self.init_capital:
+        if self.current_step == self.n_steps - 1:
             done_flag = True
         else:
             done_flag = False
