@@ -50,20 +50,24 @@ def test():
     step_num = []
     portfolio_val = []
 
-    observation = env._reset()
+    observation = test_env._reset()
     done = False
 
-    while not done:
-        
+    for i in range(test_env.n_steps):
+
         action = test_Q.test_pred(observation)
-        observation_, reward, done = env._step(action)
+        print(action)
+        observation_, reward, done = test_env._step(action)
         observation = observation_
-        step_num.append(env.current_step)
-        portfolio_val.append(env.current_capital)
+        step_num.append(test_env.current_step)
+        portfolio_val.append(test_env.current_capital)
         if done:
-            print('ending at:', env.current_capital)
+            print('ending at:', test_env.current_capital)
             break
-    plt.scatter(step_num, portfolio_val)
+    plt.scatter(step_num, portfolio_val, marker='.', c='k')
+    plt.title('Portfolio Value at Each Step of Test Data')
+    plt.xlabel('Day Number')
+    plt.ylabel('Portfolio Value')
     plt.show()
     return
 
@@ -74,7 +78,6 @@ if __name__ == '__main__':
     train_data, test_data = split_data(round_return_rate(get_data()))
     #must index at starting at 0
     train_data.index -= 100
-
     #init trading env
     env = TradingEnv(train_data, init_capital=100)
 
