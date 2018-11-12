@@ -1,7 +1,9 @@
 import pandas as pd
+import os
 
 #main method to get the return rates for the three given stocks over time
 def get_data():
+    os.chdir('..')
     ibm = compute_return_rates(sort_by_recent(load_csv('data/daily_IBM.csv')))
     msft = compute_return_rates(sort_by_recent(load_csv('data/daily_MSFT.csv')))
     qcom = compute_return_rates(sort_by_recent(load_csv('data/daily_QCOM.csv')))

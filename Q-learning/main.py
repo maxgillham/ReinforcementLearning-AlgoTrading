@@ -1,10 +1,12 @@
 import time
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 
 from enviorment import TradingEnv
 from gym import spaces
 from Q_table import QLearningTable
+
 from utils import *
 
 episodes = 100
@@ -41,6 +43,7 @@ def update():
                 end = time.time()
                 print('Completed episoide in ', end - start, ' secconds.\nFinal portfolio value: $', env.current_capital)
                 ending_cap.append(env.current_capital)
+                print('Q Table size', Q.q_table.shape)
                 break
     plt.scatter(np.arange(episodes), ending_cap, marker='.', c='k' )
     plt.title('Capital Attained at Each Episode')
