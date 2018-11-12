@@ -10,5 +10,5 @@ def q_nn(input_size, output_size):
     #softmax because actions are one-hot-encoded
     #max(model output) will gize us the best guess
     model.add(Dense(output_size, activation='softmax'))
-    model.compile(loss='mse', optimizer=optimizers.Adam())
+    model.compile(loss='binary_crossentropy', optimizer=optimizers.Adam())
     return model

@@ -22,8 +22,9 @@ class TradingEnv(gym.Env):
         #5 options, 0%, 25%, 50%, 75% or 100% for each stock
         #actually just make actition 0 1 or 2, as invest all money in
         #IBM, invest all in Microsoft ext..
-        self.action_space = spaces.Discrete(1*self.n_stocks)
+        self.action_space = spaces.Discrete(4)
         #observation space
+
         capital_range = [0, 2*init_capital]
         stock_return_rate_range = [0, get_max_and_min(self.stock_return_rate_history)[0]]
         #self.observation_space = spaces.Tuple((
