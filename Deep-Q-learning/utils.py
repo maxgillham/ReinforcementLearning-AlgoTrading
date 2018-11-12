@@ -7,8 +7,10 @@ def get_data():
     ibm = compute_return_rates(sort_by_recent(load_csv('data/daily_IBM.csv')))
     msft = compute_return_rates(sort_by_recent(load_csv('data/daily_MSFT.csv')))
     qcom = compute_return_rates(sort_by_recent(load_csv('data/daily_QCOM.csv')))
-    return pd.concat([ibm, msft, qcom], axis=1, keys=['ibm', 'msft', 'qcom'])
-
+    data = pd.concat([ibm, msft, qcom], axis=1, keys=['ibm', 'msft', 'qcom'])
+    data['dummy'] = [0.0]*len(ibm)
+    os.chdir('./Deep-Q-learning')
+    return data
 
 #load a csv into a pandas data frame
 #columns are timestamp, open, high, low, close, volume
