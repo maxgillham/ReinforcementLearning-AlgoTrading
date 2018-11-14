@@ -25,5 +25,5 @@ Once the enviorment is configured, run `main.py`.  This will train the Q learnin
 * `utils.py`
   * A series of methods used to import and process data  
 
-Here is an example graph, where the initial investment at each episode was set at $100 and the resulting capital attained after completing each episode is plotted.  
-![example](./img/example_q.png)
+Here is an example graph, where the initial investment was set at $100 and the resulting capital obtained at each decision made by the agent is plotted.  
+![example](./img/discrete_table.png)
