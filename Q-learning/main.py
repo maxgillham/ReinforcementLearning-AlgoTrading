@@ -9,6 +9,7 @@ from Q_table import QLearningTable
 
 from utils import *
 
+
 episodes = 1
 
 def update():
@@ -48,8 +49,8 @@ def update():
                 print('Q Table size', Q.q_table.shape)
                 break
     plt.scatter(np.arange(len(epi_cap)), epi_cap, marker='.', c='k' )
-    plt.title('Capital Attained at Each Episode')
-    plt.xlabel('Episode')
+    plt.title('Capital Attained at Each Decision')
+    plt.xlabel('Day')
     plt.ylabel('Capital Attained')
     plt.show()
     return
