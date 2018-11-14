@@ -7,7 +7,10 @@ def get_data():
     ibm = compute_return_rates(sort_by_recent(load_csv('data/daily_IBM.csv')))
     msft = compute_return_rates(sort_by_recent(load_csv('data/daily_MSFT.csv')))
     qcom = compute_return_rates(sort_by_recent(load_csv('data/daily_QCOM.csv')))
-    return pd.concat([ibm, msft, qcom], axis=1, keys=['ibm', 'msft', 'qcom'])
+    data = pd.concat([ibm, msft, qcom], axis=1, keys=['ibm', 'msft', 'qcom'])
+    data['dummy'] = [0.0]*len(ibm)
+    os.chdir('./Q-learning')
+    return data
 
 
 #load a csv into a pandas data frame
@@ -38,6 +41,7 @@ def get_max_and_min(df):
 
 def round_to_base(value, base):
     return int(base * round(value/base))
+
 if __name__ == '__main__':
     #example on how you can call it
     return_rates = get_data()
