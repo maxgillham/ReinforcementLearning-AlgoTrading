@@ -19,10 +19,9 @@ class TradingEnv(gym.Env):
         self.stock_return_rate = None
         self.current_capital = None
 
-        #5 options, 0%, 25%, 50%, 75% or 100% for each stock
         #actually just make actition 0 1 or 2, as invest all money in
-        #IBM, invest all in Microsoft ext..
-        self.action_space = spaces.Discrete(1*self.n_stocks)
+        #IBM, Microsoft, Qualcom, or "dummy stock" for 1 day
+        self.action_space = spaces.Discrete(4)
         #observation space
         capital_range = [0, 2*init_capital]
         stock_return_rate_range = [0, get_max_and_min(self.stock_return_rate_history)[0]]
@@ -48,12 +47,12 @@ class TradingEnv(gym.Env):
         return self._get_obs()
 
     def _get_obs(self):
-        obs = []
-        #obs.extend(self.stock_owned)
-        obs.append(round_to_base(self.current_capital, base=5))
         return_rate_list_temp = list(self.stock_return_rate)
-        obs.extend([ '%.4f' % elem for elem in list(self.stock_return_rate)])
-        return obs
+        for i in range(len(return_rate_list_temp)):
+            if return_rate_list_temp[i] < -0.01: return_rate_list_temp[i] = -1
+            elif return_rate_list_temp[i] > 0.01: return_rate_list_temp[i] = 1
+            else: return_rate_list_temp[i] = 0
+        return return_rate_list_temp
 
     def _step(self, action):
         #previous capital is now capital before action
@@ -61,14 +60,15 @@ class TradingEnv(gym.Env):
         #new value is return rate of chosen stock times previous capital
         new_val = round((self.stock_return_rate[action]+1) * prev_capital)
         #current reward , log base 2 of new capital / init investment
-        reward = round(math.log(new_val/self.init_capital, 2), 1)
+        reward = math.log(new_val/prev_capital, 2)
+        #reward = new_val/prev_capital
         #increment time step for data
         self.current_step += 1
         #return rate is return rate for that day
         self.stock_return_rate = self.stock_return_rate_history.loc[self.current_step]
         self.current_capital = round_to_base(value = new_val, base=5)
         #done if on the last step, or we have doubled out investment
-        if self.current_step == self.n_steps - 1 or self.current_capital >= 2*self.init_capital:
+        if self.current_step == self.n_steps - 1:
             done_flag = True
         else:
             done_flag = False
