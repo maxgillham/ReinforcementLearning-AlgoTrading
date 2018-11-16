@@ -9,10 +9,12 @@ from Q_table import QLearningTable
 
 from utils import *
 
-episodes = 100
+
+episodes = 1
 
 def update():
     ending_cap = []
+    epi_cap = []
     #by default the training is set to be 100 episodes per training
     for episode in range(episodes):
         start = time.time()
@@ -37,6 +39,7 @@ def update():
 
             # swap observation
             observation = observation_
+            epi_cap.append(env.current_capital)
 
             # break while loop when end of this episode
             if done:
@@ -45,9 +48,9 @@ def update():
                 ending_cap.append(env.current_capital)
                 print('Q Table size', Q.q_table.shape)
                 break
-    plt.scatter(np.arange(episodes), ending_cap, marker='.', c='k' )
-    plt.title('Capital Attained at Each Episode')
-    plt.xlabel('Episode')
+    plt.scatter(np.arange(len(epi_cap)), epi_cap, marker='.', c='k' )
+    plt.title('Capital Attained at Each Decision')
+    plt.xlabel('Day')
     plt.ylabel('Capital Attained')
     plt.show()
     return
