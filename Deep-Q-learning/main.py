@@ -9,7 +9,7 @@ from deep_q_agent import deepQ
 
 from utils import *
 
-episodes = 100
+episodes = 1
 
 def train():
     #by default the training is set to be 100 episodes per training
@@ -77,7 +77,7 @@ if __name__ == '__main__':
 
     train_data, test_data = split_data(round_return_rate(get_data()))
     #must index at starting at 0
-    train_data.index -= 100
+    train_data.index -= 1000
     #init trading env
     env = TradingEnv(train_data, init_capital=1000)
 

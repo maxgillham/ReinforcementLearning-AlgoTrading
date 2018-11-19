@@ -24,7 +24,7 @@ def sort_by_recent(df):
 
 #divide data into training and testing data
 def split_data(df):
-    return df.iloc[0:df.shape[0]-100], df.iloc[df.shape[0]-100:]
+    return df.iloc[0:df.shape[0]-1000], df.iloc[df.shape[0]-1000:]
 
 #convert to rate of return
 def compute_return_rates(df):
