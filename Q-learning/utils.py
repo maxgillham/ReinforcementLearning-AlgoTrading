@@ -56,9 +56,9 @@ def create_iid(days):
 
     #randomly choose for each day
     for _ in range(days):
-        stock_1.append(np.random.choice([-.1, 0, .1]))
-        stock_2.append(np.random.choice([-0.25, 0, .25]))
-        stock_3.append(np.random.choice([-0.05, 0, 0.05]))
+        stock_1.append(np.random.uniform(-0.1, .1))
+        stock_2.append(np.random.uniform(-0.1, .1))
+        stock_3.append(np.random.uniform(-0.1, .1))
         dummy.append(0.0)
 
 
