@@ -29,12 +29,13 @@ class deepQ:
         # action selection
         if np.random.uniform() < self.epsilon:
             # choose random action
-            # some actions may have the same value, randomly choose on in these actions
             action = np.random.choice(self.action_size)
+            print('random action', action)
         else:
             # let the model predict
             pred_unformat = self.model.predict(np.array([observation]))
             action = np.argmax(pred_unformat[0])
+            print('nn action', action)
         return action
 
     def remember(self, s, a, r, s_, d):
@@ -56,7 +57,7 @@ class deepQ:
 
         #Q(s_,a)
         target = r + self.gamma * np.argmax(self.model.predict(s_), axis=1)
-        target[d] = r[d]
+        #target[d] = r[d]
         #Q(s,a)
         target_ = self.model.predict(s)
 
