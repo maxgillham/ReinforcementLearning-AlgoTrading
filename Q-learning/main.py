@@ -9,9 +9,10 @@ from Q_table import QLearningTable
 
 from utils import *
 
-episodes = 100
 
-def update():
+episodes = 10
+
+def update(env, Q):
     ending_cap = []
     #by default the training is set to be 100 episodes per training
     for episode in range(episodes):
@@ -41,20 +42,50 @@ def update():
             # break while loop when end of this episode
             if done:
                 end = time.time()
-                print('Completed episoide in ', end - start, ' secconds.\nFinal portfolio value: $', env.current_capital)
+                print('Completed episoide in ', end - start, ' secconds.\n')
                 ending_cap.append(env.current_capital)
-                print('Q Table size', Q.q_table.shape)
                 break
-    plt.scatter(np.arange(episodes), ending_cap, marker='.', c='k' )
-    plt.title('Capital Attained at Each Episode')
-    plt.xlabel('Episode')
-    plt.ylabel('Capital Attained')
-    plt.show()
+    #plt.scatter(np.arange(episodes), ending_cap, marker='.', c='k' )
+    #plt.title('Capital Attained at Each Decision')
+    #plt.xlabel('Day')
+    #plt.ylabel('Capital Attained')
+    #plt.show()
     return
 
+def test(test_env, Q):
+    observation = test_env._reset()
+    test_cap = []
+    done = False
+    while not done:
 
-if __name__ == '__main__':
-    train_data = round_return_rate(get_data())
+        #get expected reward for each action at this state
+        state_action = Q.q_table.loc[str(test_env._get_obs()), :]
+
+        # some actions may have the same expected reward, randomly choose on in these actions
+        action = np.random.choice(state_action[state_action == np.max(state_action)].index)
+
+        observation_, reward, done = test_env._step(action)
+
+        test_cap.append(test_env.current_capital)
+
+        observation = observation_
+
+        if done:
+            break
+
+    plt.scatter(np.arange(len(test_cap)), test_cap, marker='.', c='k' )
+
+    plt.title('Capital Attained at Each Decision with ' + str(episodes) + ' Ep of Training')
+    plt.xlabel('Day')
+    plt.ylabel('Capital Attained')
+    plt.show()
+
+
+def real_data():
+    print('For Real Data')
+    train_data, test_data = split_data(round_return_rate(get_data()))
+    #must index at starting at 0
+    train_data.index -= 100
 
     #init trading env
     env = TradingEnv(train_data, init_capital=100)
@@ -62,7 +93,50 @@ if __name__ == '__main__':
     #init Q table
     Q = QLearningTable(actions=list(range(env.action_space.n)))
 
+
     #train method
-    update()
+    update(env, Q)
+
+    test_env = TradingEnv(test_data, init_capital=100)
+
 
     print(Q.q_table)
+
+    test(test_env, Q)
+
+    #2:45
+    return
+
+def iid_data():
+    print('For IID Source')
+    #get train and test data for 5000 days where return rate is i.i.d
+    train_data, test_data = split_data(create_iid(1000))
+
+    test_data.index -= (train_data.shape[0] + test_data.shape[0])-100
+    #init trading enviorment
+    env = TradingEnv(train_data, init_capital=100)
+    #init q learing table
+    Q = QLearningTable(actions=list(range(env.action_space.n)))
+    #traing method
+    update(env, Q)
+
+    test_env = TradingEnv(test_data, init_capital=100)
+
+    test(test_env, Q)
+    print(Q.q_table)
+
+
+    return
+
+
+if __name__ == '__main__':
+
+    '''
+    For i.i.d source
+    '''
+    #iid_data()
+
+    '''
+    For real data
+    '''
+    real_data()

@@ -7,10 +7,8 @@ def get_data():
     ibm = compute_return_rates(sort_by_recent(load_csv('data/daily_IBM.csv')))
     msft = compute_return_rates(sort_by_recent(load_csv('data/daily_MSFT.csv')))
     qcom = compute_return_rates(sort_by_recent(load_csv('data/daily_QCOM.csv')))
-    data = pd.concat([ibm, msft, qcom], axis=1, keys=['ibm', 'msft', 'qcom'])
-    data['dummy'] = [0.0]*len(ibm)
-    os.chdir('./Deep-Q-learning')
-    return data
+    return pd.concat([ibm, msft, qcom], axis=1, keys=['ibm', 'msft', 'qcom'])
+
 
 #load a csv into a pandas data frame
 #columns are timestamp, open, high, low, close, volume
@@ -24,7 +22,7 @@ def sort_by_recent(df):
 
 #divide data into training and testing data
 def split_data(df):
-    return df.iloc[0:df.shape[0]-100], df.iloc[df.shape[0]-100:]
+    return df.iloc[0:df.shape[0]-1000], df.iloc[df.shape[0]-1000:]
 
 #convert to rate of return
 def compute_return_rates(df):
@@ -40,6 +38,7 @@ def get_max_and_min(df):
 
 def round_to_base(value, base):
     return int(base * round(value/base))
+    
 if __name__ == '__main__':
     #example on how you can call it
     return_rates = get_data()
