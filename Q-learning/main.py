@@ -110,7 +110,7 @@ def real_data():
 def iid_data():
     print('For IID Source')
     #get train and test data for 5000 days where return rate is i.i.d
-    train_data, test_data = split_data(create_iid(5000))
+    train_data, test_data = split_data(create_iid(1000))
 
     test_data.index -= (train_data.shape[0] + test_data.shape[0])-100
     #init trading enviorment
@@ -134,9 +134,9 @@ if __name__ == '__main__':
     '''
     For i.i.d source
     '''
-    iid_data()
+    #iid_data()
 
     '''
     For real data
     '''
-    #real_data()
+    real_data()
