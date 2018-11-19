@@ -64,7 +64,7 @@ class TradingEnv(gym.Env):
         #new value is return rate of chosen stock times previous capital
         new_val = (self.stock_return_rate[action]+1) * prev_capital
         #current reward , log base 2 of new capital / init investment
-        reward = math.log(new_val/self.init_capital, 2)
+        reward = math.log(new_val,2)
         #reward = new_val/prev_capital
         self.current_capital = round(new_val)
         #done if on the last step, or we have doubled out investment
