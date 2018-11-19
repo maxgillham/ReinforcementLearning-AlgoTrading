@@ -72,6 +72,36 @@ def create_iid(days):
 
     return data
 
+#create meta data that is markov
+def create_markov(days):
+
+    #init stock lists
+    stock_1_rates = [0.05] # bond with return rate 0.05
+    stock_2_rates = [-0.03, 0.07, 0.15] # stock with mean return rate 0.095
+    stock_2_transition_probs = [0.07, 0.53, 0.4]
+    stock_3_rates = [-0.15, 0.055, 0.3] # stock with mean return rate 0.112
+    stock_2_transition_probs = [0.2, 0.4, 0.4]
+
+    dummy = []
+
+    #randomly choose for each day
+    for _ in range(days):
+        stock_1.append(0.05)
+        stock_2.append(np.random.choice(a=stock_2_rates, p=stock_2_transition_probs))
+        stock_3.append(np.random.choice(a=stock_3_rates, p=stock_3_transition_probs))
+        dummy.append(0.0)
+
+
+    #make into pandas obj
+    data = pd.DataFrame(
+        {'stock_1': stock_1,
+         'stock_2': stock_2,
+         'stock_3': stock_3,
+         'dummy': dummy
+        })
+
+    return data
+
 if __name__ == '__main__':
     #example on how you can call it
     #return_rates = get_data()
