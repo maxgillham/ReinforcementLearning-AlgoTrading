@@ -10,11 +10,10 @@ from Q_table import QLearningTable
 from utils import *
 
 
-episodes = 1
+episodes = 50
 
 def update():
     ending_cap = []
-    epi_cap = []
     #by default the training is set to be 100 episodes per training
     for episode in range(episodes):
         start = time.time()
@@ -39,25 +38,54 @@ def update():
 
             # swap observation
             observation = observation_
-            epi_cap.append(env.current_capital)
 
             # break while loop when end of this episode
             if done:
                 end = time.time()
-                print('Completed episoide in ', end - start, ' secconds.\nFinal portfolio value: $', env.current_capital)
+                print('Completed episoide in ', end - start, ' secconds.\n')
                 ending_cap.append(env.current_capital)
-                print('Q Table size', Q.q_table.shape)
                 break
-    plt.scatter(np.arange(len(epi_cap)), epi_cap, marker='.', c='k' )
-    plt.title('Capital Attained at Each Decision')
+    #plt.scatter(np.arange(episodes), ending_cap, marker='.', c='k' )
+    #plt.title('Capital Attained at Each Decision')
+    #plt.xlabel('Day')
+    #plt.ylabel('Capital Attained')
+    #plt.show()
+    return
+
+def test():
+    observation = test_env._reset()
+    test_cap = []
+    done = False
+    while not done:
+        
+        #get expected reward for each action at this state
+        state_action = Q.q_table.loc[str(test_env._get_obs()), :]
+       
+        # some actions may have the same expected reward, randomly choose on in these actions
+        action = np.random.choice(state_action[state_action == np.max(state_action)].index)
+
+        observation_, reward, done = test_env._step(action)
+
+        test_cap.append(test_env.current_capital)
+
+        observation = observation_
+
+        if done:
+            break
+
+    plt.scatter(np.arange(len(test_cap)), test_cap, marker='.', c='k' )
+    
+    plt.title('Capital Attained at Each Decision with ' + str(episodes) + ' Ep of Training')
     plt.xlabel('Day')
     plt.ylabel('Capital Attained')
     plt.show()
-    return
 
 
 if __name__ == '__main__':
-    train_data = round_return_rate(get_data())
+
+    train_data, test_data = split_data(round_return_rate(get_data()))
+    #must index at starting at 0
+    train_data.index -= 100
 
     #init trading env
     env = TradingEnv(train_data, init_capital=100)
@@ -65,7 +93,15 @@ if __name__ == '__main__':
     #init Q table
     Q = QLearningTable(actions=list(range(env.action_space.n)))
 
+
     #train method
     update()
 
-    print(Q.q_table)
+    test_env = TradingEnv(test_data, init_capital=100)
+
+    
+    #print(Q.q_table)
+
+    test()
+
+    #2:45

@@ -68,7 +68,8 @@ class TradingEnv(gym.Env):
         self.stock_return_rate = self.stock_return_rate_history.loc[self.current_step]
         self.current_capital = round(new_val)
         #done if on the last step, or we have doubled out investment
-        if self.current_step == self.n_steps - 1 or self.current_capital >= 4*self.init_capital:
+        # or self.current_capital >= 4*self.init_capital
+        if self.current_step == self.n_steps - 1:
             done_flag = True
         else:
             done_flag = False

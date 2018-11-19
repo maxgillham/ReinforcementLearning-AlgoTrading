@@ -9,7 +9,11 @@ from deep_q_agent import deepQ
 
 from utils import *
 
+<<<<<<< HEAD
 episodes = 1
+=======
+episodes = 5
+>>>>>>> 039a49674d88c33262ebe067bb4d3690b04dcbb6
 
 def train():
     #by default the training is set to be 100 episodes per training
