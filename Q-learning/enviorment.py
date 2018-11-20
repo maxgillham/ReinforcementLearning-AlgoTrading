@@ -48,10 +48,10 @@ class TradingEnv(gym.Env):
 
     def _get_obs(self):
         return_rate_list_temp = list(self.stock_return_rate)
-        for i in range(len(return_rate_list_temp)):
-            if return_rate_list_temp[i] < -0.01: return_rate_list_temp[i] = -1
-            elif return_rate_list_temp[i] > 0.01: return_rate_list_temp[i] = 1
-            else: return_rate_list_temp[i] = 0
+        #for i in range(len(return_rate_list_temp)):
+            #if return_rate_list_temp[i] < -0.01: return_rate_list_temp[i] = -1
+            #elif return_rate_list_temp[i] > 0.01: return_rate_list_temp[i] = 1
+            #else: return_rate_list_temp[i] = 0
         return return_rate_list_temp
 
     def _step(self, action):
