@@ -79,12 +79,12 @@ def create_markov(days):
     stock_1_rates = [0.05] # bond with return rate 0.05
 
     # stock with mean return rate 0.095
-    stock_2_rates = np.array([-0.03, 0.07, 0.15] )
+    stock_2_rates = np.array([-0.03, 0.0, 0.03] )
     stock_2_transition_matrix = np.array([[0.4, 0.3, 0.3],
                                           [0.3, 0.4, 0.3],
                                           [0.3, 0.3, 0.4]])
     # stock with mean return rate 0.112
-    stock_3_rates = np.array([-0.15, 0.055, 0.3])
+    stock_3_rates = np.array([-0.15, 0.001, 0.15])
     stock_3_transition_matrix = np.array([[0.2, 0.4, 0.4],
                                           [0.4, 0.2, 0.4],
                                           [0.4, 0.4, 0.2]])
@@ -97,7 +97,6 @@ def create_markov(days):
     #init previous value for markov chains
     index_2 = 0
     index_3 = 0
-    print(stock_2_transition_matrix[0])
     #randomly choose for each day
     for _ in range(days):
 
