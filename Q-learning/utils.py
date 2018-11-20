@@ -77,18 +77,33 @@ def create_markov(days):
 
     #init stock lists
     stock_1_rates = [0.05] # bond with return rate 0.05
-    stock_2_rates = [-0.03, 0.07, 0.15] # stock with mean return rate 0.095
-    stock_2_transition_probs = [0.07, 0.53, 0.4]
-    stock_3_rates = [-0.15, 0.055, 0.3] # stock with mean return rate 0.112
-    stock_2_transition_probs = [0.2, 0.4, 0.4]
-
+    stock_2_rates = np.array([-0.03, 0.07, 0.15] )# stock with mean return rate 0.095
+    stock_2_transition_matrix = np.matrix([[0.4, 0.3, 0.2],
+                                [0.25, 0.4, 0.35],
+                                [0.15, 0.35, 0.5]])
+    stock_3_rates = np.array([-0.15, 0.055, 0.3]) # stock with mean return rate 0.112
+    stock_2_transition_matrix = np.matrix([[0.35, 0.35, 0.3],
+                                 [0.2, 0.5, 0.3],
+                                 [0.2, 0.3, 0.5]])
     dummy = []
+
+    stock_1 = []
+    stock_2 = []
+    stock_3 = []
 
     #randomly choose for each day
     for _ in range(days):
+        
         stock_1.append(0.05)
-        stock_2.append(np.random.choice(a=stock_2_rates, p=stock_2_transition_probs))
-        stock_3.append(np.random.choice(a=stock_3_rates, p=stock_3_transition_probs))
+
+        stock_2.append(np.random.choice(a=stock_2_rates, p=stock_2_transition_matrix[index_2]))
+        index_2 = np.where(stock_2_rates = stock_2[-1])
+        stock_2_transition_matrix = np.dot(stock_2_transition_matrix,stock_2_transition_matrix)
+
+        stock_3.append(np.random.choice(a=stock_3_rates, p=stock_3_transition_matrix[index_3]))
+        index_3 = np.where(stock_3_rates = stock_3[-1])
+        stock_3_transition_matrix = np.dot(stock_3_transition_matrix,stock_3_transition_matrix)
+        
         dummy.append(0.0)
 
 
