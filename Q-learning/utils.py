@@ -77,33 +77,42 @@ def create_markov(days):
 
     #init stock lists
     stock_1_rates = [0.05] # bond with return rate 0.05
-    stock_2_rates = np.array([-0.03, 0.07, 0.15] )# stock with mean return rate 0.095
-    stock_2_transition_matrix = np.matrix([[0.4, 0.3, 0.2],
-                                [0.25, 0.4, 0.35],
-                                [0.15, 0.35, 0.5]])
-    stock_3_rates = np.array([-0.15, 0.055, 0.3]) # stock with mean return rate 0.112
-    stock_2_transition_matrix = np.matrix([[0.35, 0.35, 0.3],
-                                 [0.2, 0.5, 0.3],
-                                 [0.2, 0.3, 0.5]])
+
+    # stock with mean return rate 0.095
+    stock_2_rates = np.array([-0.03, 0.07, 0.15] )
+    stock_2_transition_matrix = np.array([[0.4, 0.3, 0.3],
+                                          [0.3, 0.4, 0.3],
+                                          [0.3, 0.3, 0.4]])
+    # stock with mean return rate 0.112
+    stock_3_rates = np.array([-0.15, 0.055, 0.3])
+    stock_3_transition_matrix = np.array([[0.2, 0.4, 0.4],
+                                          [0.4, 0.2, 0.4],
+                                          [0.4, 0.4, 0.2]])
     dummy = []
 
     stock_1 = []
     stock_2 = []
     stock_3 = []
 
+    #init previous value for markov chains
+    index_2 = 0
+    index_3 = 0
+    print(stock_2_transition_matrix[0])
     #randomly choose for each day
     for _ in range(days):
-        
+
         stock_1.append(0.05)
 
         stock_2.append(np.random.choice(a=stock_2_rates, p=stock_2_transition_matrix[index_2]))
-        index_2 = np.where(stock_2_rates = stock_2[-1])
-        stock_2_transition_matrix = np.dot(stock_2_transition_matrix,stock_2_transition_matrix)
+        index_2 = np.where(stock_2_rates == stock_2[-1])[0][0]
+
+        #stock_2_transition_matrix = np.dot(stock_2_transition_matrix,stock_2_transition_matrix)
 
         stock_3.append(np.random.choice(a=stock_3_rates, p=stock_3_transition_matrix[index_3]))
-        index_3 = np.where(stock_3_rates = stock_3[-1])
-        stock_3_transition_matrix = np.dot(stock_3_transition_matrix,stock_3_transition_matrix)
-        
+        index_3 = np.where(stock_3_rates == stock_3[-1])[0][0]
+
+        #stock_3_transition_matrix = np.dot(stock_3_transition_matrix,stock_3_transition_matrix)
+
         dummy.append(0.0)
 
 
@@ -126,4 +135,6 @@ if __name__ == '__main__':
     #return_rates_train, return_rates_test = split_data(return_rates)
     #print('Training Shape: ', return_rates_train.shape, '\nTesting Shape: ', return_rates_test.shape)
 
-    create_iid(15)
+    #create_iid(15)
+    markov_data = create_markov(50)
+    print(markov_data)
