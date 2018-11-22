@@ -79,57 +79,64 @@ def test(test_env, Q):
     plt.xlabel('Day')
     plt.ylabel('Capital Attained')
     plt.show()
-
+    return
 
 def real_data():
     print('For Real Data')
     train_data, test_data = split_data(round_return_rate(get_data()))
     #must index at starting at 0
     train_data.index -= 100
-
     #init trading env
-    env = TradingEnv(train_data, init_capital=100)
-
+    env = TradingEnv(train_data, init_capital=100, is_discrete=False)
     #init Q table
     Q = QLearningTable(actions=list(range(env.action_space.n)))
-
-
     #train method
     update(env, Q)
-
-    test_env = TradingEnv(test_data, init_capital=100)
-
-
+    test_env = TradingEnv(test_data, init_capital=100, is_discrete=False)
     print(Q.q_table)
-
     test(test_env, Q)
-
     #2:45
     return
 
 def iid_data():
     print('For IID Source')
     #get train and test data for 5000 days where return rate is i.i.d
-    train_data, test_data = split_data(create_iid(1000))
-
+    train_data, test_data = split_data(create_iid(5000))
     test_data.index -= (train_data.shape[0] + test_data.shape[0])-100
     #init trading enviorment
-    env = TradingEnv(train_data, init_capital=100)
+    env = TradingEnv(train_data, init_capital=100, is_discrete = False)
     #init q learing table
     Q = QLearningTable(actions=list(range(env.action_space.n)))
     #traing method
     update(env, Q)
-
-    test_env = TradingEnv(test_data, init_capital=100)
-
-    test(test_env, Q)
     print(Q.q_table)
+    test_env = TradingEnv(test_data, init_capital=100, is_discrete = False)
+    test(test_env, Q)
+    return
 
-
+def markov_data():
+    print('For Markov Source')
+    #get train and test for 5000 days where return rates are dependent on previous day
+    train_data, test_data = split_data(create_markov(5000))
+    test_data.index -= (train_data.shape[0] + test_data.shape[0]) - 100
+    #init trading envioourment
+    env = TradingEnv(train_data, init_capital=100, is_discrete=True)
+    #init q learning Q_table
+    Q = QLearningTable(actions=list(range(env.action_space.n)))
+    #training method
+    update(env, Q)
+    test_env = TradingEnv(test_data, init_capital=100, is_discrete=True)
+    print(Q.q_table)
+    test(test_env, Q)
     return
 
 
 if __name__ == '__main__':
+
+    '''
+    For Markov source
+    '''
+    markov_data()
 
     '''
     For i.i.d source
@@ -139,4 +146,4 @@ if __name__ == '__main__':
     '''
     For real data
     '''
-    real_data()
+    #real_data()

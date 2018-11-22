@@ -8,7 +8,7 @@ from gym.utils import seeding
 from utils import *
 
 class TradingEnv(gym.Env):
-    def __init__(self, train_data, init_capital):
+    def __init__(self, train_data, init_capital, is_discrete):
         self.stock_return_rate_history = train_data
         self.n_stocks = train_data.shape[1]
         self.n_steps = train_data.shape[0]
@@ -18,6 +18,7 @@ class TradingEnv(gym.Env):
         self.stock_owned = None
         self.stock_return_rate = None
         self.current_capital = None
+        self.is_discrete = is_discrete
 
         #actually just make actition 0 1 or 2, as invest all money in
         #IBM, Microsoft, Qualcom, or "dummy stock" for 1 day
@@ -48,10 +49,11 @@ class TradingEnv(gym.Env):
 
     def _get_obs(self):
         return_rate_list_temp = list(self.stock_return_rate)
-        for i in range(len(return_rate_list_temp)):
-            if return_rate_list_temp[i] < -0.01: return_rate_list_temp[i] = -1
-            elif return_rate_list_temp[i] > 0.01: return_rate_list_temp[i] = 1
-            else: return_rate_list_temp[i] = 0
+        if not self.is_discrete:
+            for i in range(len(return_rate_list_temp)):
+                if return_rate_list_temp[i] < -0.01: return_rate_list_temp[i] = -1
+                elif return_rate_list_temp[i] > 0.01: return_rate_list_temp[i] = 1
+                else: return_rate_list_temp[i] = 0
         return return_rate_list_temp
 
     def _step(self, action):
@@ -64,7 +66,9 @@ class TradingEnv(gym.Env):
         #new value is return rate of chosen stock times previous capital
         new_val = (self.stock_return_rate[action]+1) * prev_capital
         #current reward , log base 2 of new capital / init investment
-        reward = math.log(new_val,2)
+        if new_val > prev_capital: reward = math.log((new_val-prev_capital),2)
+        elif new_val == prev_capital: reward = 0
+        else: reward = -math.log(abs(new_val - prev_capital),2)
         #reward = new_val/prev_capital
         self.current_capital = round(new_val)
         #done if on the last step, or we have doubled out investment
