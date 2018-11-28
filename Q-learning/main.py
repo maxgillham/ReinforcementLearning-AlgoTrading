@@ -11,7 +11,6 @@ from utils import *
 
 
 episodes = 10
-
 def update(env, Q):
     ending_cap = []
     #by default the training is set to be 100 episodes per training
@@ -101,15 +100,18 @@ def real_data():
 def iid_data():
     print('For IID Source')
     #get train and test data for 5000 days where return rate is i.i.d
-    train_data, test_data = split_data(create_iid(5000))
-    test_data.index -= (train_data.shape[0] + test_data.shape[0])-100
+    #train_data, test_data = split_data(create_iid(5000))
+    #test_data.index -= (train_data.shape[0] + test_data.shape[0])-100
+    train_data = pd.read_pickle("train_data_iid")
+    test_data = pd.read_pickle("test_data_iid")
+   
     #init trading enviorment
     env = TradingEnv(train_data, init_capital=100, is_discrete = False)
     #init q learing table
     Q = QLearningTable(actions=list(range(env.action_space.n)))
     #traing method
     update(env, Q)
-    print(Q.q_table)
+    #print(Q.q_table)
     test_env = TradingEnv(test_data, init_capital=100, is_discrete = False)
     test(test_env, Q)
     return
@@ -117,8 +119,10 @@ def iid_data():
 def markov_data():
     print('For Markov Source')
     #get train and test for 5000 days where return rates are dependent on previous day
-    train_data, test_data = split_data(create_markov(5000))
-    test_data.index -= (train_data.shape[0] + test_data.shape[0]) - 100
+    #train_data, test_data = split_data(create_markov(5000))
+    #test_data.index -= (train_data.shape[0] + test_data.shape[0]) - 100
+    train_data = pd.read_pickle("train_data_mc")
+    test_data = pd.read_pickle("test_data_mc")
     #init trading envioourment
     env = TradingEnv(train_data, init_capital=100, is_discrete=True)
     #init q learning Q_table
