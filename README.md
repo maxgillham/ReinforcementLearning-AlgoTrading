@@ -32,7 +32,11 @@ If we introduce a dummy stock, with constant return rate %0 amung i.i.d sources 
 ![iid_dummy](./img/iid_w_dummy.png)  
 Similarily, if we introduce a fixed asset, or bond, the Q-learning will often choose to invest in it, rather than the i.i.d return rates.  
 ![iid dummy bond](./img/iid_w_bond.png)  
+Here is the algoritithm preforming on the same testing data, for 1 to 10 episoides of training before benchmarking.  As you can see, the algorithm shows no uniform progression, just random progression as the Q table cannot obtain a policy between observations and actions, as there is no relationship from state to state.  
+![iidgif](./img/iid.gif)  
 Consider now the return rates being modeled by a markovian process of memory 1.  As expected, this yeilds better results than the i.i.d process.  
 ![markov](./img/markov_no_dummy.png)  
 And introducing the dummy stock in this procedure representing the action of not investing.  
 ![markoc dum](./img/markov_w_dummy.png)  
+Here you can see the algorithm evolve over 10 episoides of training. The policy devolopes to reduce the possiblility of loosing money at any given step, and maximizes the capital gained for any given step.  
+![mcgif](./img/mc.gif)  
