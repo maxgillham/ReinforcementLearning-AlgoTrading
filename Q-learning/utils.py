@@ -47,21 +47,17 @@ def round_to_base(value, base):
 
 #create meta data that is i.i.d
 def create_iid(days):
-
     #init stock lists
     stock_1 = []
     stock_2 = []
     stock_3 = []
     dummy = []
-
     #randomly choose for each day
     for _ in range(days):
         stock_1.append(np.random.uniform(-0.1, .1))
         stock_2.append(np.random.uniform(-0.1, .1))
         stock_3.append(np.random.uniform(-0.1, .1))
         dummy.append(0.0)
-
-
     #make into pandas obj
     data = pd.DataFrame(
         {'stock_1': stock_1,
@@ -69,35 +65,29 @@ def create_iid(days):
          'stock_3': stock_3,
          'dummy': dummy
         })
-
     return data
 
 #create meta data that is markov
 def create_markov(days):
-
     #stock 1 - low reward more predicable
     stock_1_rates = np.array([-0.05, 0.0, 0.05])
     stock_1_transition_matrix = np.array([[0.9, 0.05, 0.05],
                                           [0.05, 0.9, 0.05],
                                           [0.05, 0.05, 0.9]])
-
     # stock 2 - larger reward less predictable
     stock_2_rates = np.array([-0.1, 0.0, 0.1])
     stock_2_transition_matrix = np.array([[0.8, 0.1, 0.1],
                                           [0.1, 0.8, 0.1],
                                           [0.1, 0.1, 0.8]])
-
     # stock 3 - big reward but more random
     stock_3_rates = np.array([-0.25, 0.0, 0.25])
     stock_3_transition_matrix = np.array([[0.2, 0.4, 0.4],
                                           [0.4, 0.2, 0.4],
                                           [0.4, 0.4, 0.2]])
     dummy = []
-
     stock_1 = []
     stock_2 = []
     stock_3 = []
-
     #init previous value for markov chains
     index_1 = 0
     index_2 = 0
@@ -107,20 +97,13 @@ def create_markov(days):
         #stock_1.append(0.0)
         stock_1.append(np.random.choice(a=stock_1_rates, p=stock_1_transition_matrix[index_1]))
         index_1 = np.where(stock_1_rates == stock_1[-1])[0][0]
-
         stock_2.append(np.random.choice(a=stock_2_rates, p=stock_2_transition_matrix[index_2]))
         index_2 = np.where(stock_2_rates == stock_2[-1])[0][0]
-
         #stock_2_transition_matrix = np.dot(stock_2_transition_matrix,stock_2_transition_matrix)
-
         stock_3.append(np.random.choice(a=stock_3_rates, p=stock_3_transition_matrix[index_3]))
         index_3 = np.where(stock_3_rates == stock_3[-1])[0][0]
-
         #stock_3_transition_matrix = np.dot(stock_3_transition_matrix,stock_3_transition_matrix)
-
         dummy.append(0.0)
-
-
     #make into pandas obj
     data = pd.DataFrame(
         {'stock_1': stock_1,
@@ -128,8 +111,27 @@ def create_markov(days):
          'stock_3': stock_3,
          'dummy': dummy
         })
-
     return data
+
+def create_markov_memory_2(days):
+    #stock 1 values and 1st order and 2nd order transition matrices
+    stock_1_rates = np.array([-0.05, 0.0, 0.05])
+    stock_1_single_step = np.array([[0.9, 0.05, 0.05],
+                                    [0.05, 0.9, 0.05],
+                                    [0.05, 0.05, 0.9]])
+    stock_1_double_step = np.dot(stock_1_single_step, stock_1_single_step)
+    #stock 2 values and 1st order and 2nd order transition matrices
+    stock_2_rates = np.array([-0.1, 0.0, 0.1])
+    stock_2_single_step = np.array([[0.8, 0.1, 0.1],
+                                    [0.1, 0.8, 0.1],
+                                    [0.1, 0.1, 0.8]])
+    stock_2_double_step = np.dot(stock_2_single_step, stock_2_single_step)
+    print(stock_2_double_step)
+
+
+    #stock_3_rates = np.array([-0.25, 0.0, 0.25])
+
+    return 
 
 if __name__ == '__main__':
     #example on how you can call it
@@ -141,5 +143,4 @@ if __name__ == '__main__':
     #print('Training Shape: ', return_rates_train.shape, '\nTesting Shape: ', return_rates_test.shape)
 
     #create_iid(15)
-    markov_data = create_markov(50)
-    print(markov_data)
+    markov_data = create_markov_memory_2(50)
