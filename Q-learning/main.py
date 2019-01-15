@@ -136,12 +136,12 @@ if __name__ == '__main__':
     '''
     For Markov source
     '''
-    #markov_data()
+    markov_data()
 
     '''
     For i.i.d source
     '''
-    iid_data()
+    # iid_data()
 
     '''
     For real data
