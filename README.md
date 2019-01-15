@@ -15,7 +15,17 @@ pip install -r requirements-cpu.txt
 ```  
 The equivalent requirements for gpu support are inside `requirements-gpu.txt` but this isn't necessary until (if) TensorFlow is introduced.  
 ## Training
-Once the enviorment is configured, run `main.py`.  This will train the Q learning agent and plot some results.  An overview of the code architechure is found below.  
+Once the enviorment is configured, run `python main.py [souce type]`, where source type can be:  
+* `markov`
+  * Markov memory 1 
+* `iid`
+  * Independent identically distributed uniform r.vs
+* `mix`
+  * Two markov sources and two iid sources
+* `real` 
+  * Real data 
+ 
+This will train the Q learning agent and plot some results.  An overview of the code architechure is found below.  
 * `main.py`
   * This is where you can specify episodes and initial investment
 * `enviorment.py`
