@@ -23,9 +23,6 @@ def update(env, Q):
 
         done = False
         while not done:
-            # update env
-            # did not finish TradingEnv for fresh env yet
-
             # RL choose action based on observation
             action = Q.choose_action(env._get_obs())
 
@@ -45,11 +42,6 @@ def update(env, Q):
                 print('Completed episoide in ', end - start, ' secconds.\n')
                 ending_cap.append(env.current_capital)
                 break
-    #plt.scatter(np.arange(episodes), ending_cap, marker='.', c='k' )
-    #plt.title('Capital Attained at Each Decision')
-    #plt.xlabel('Day')
-    #plt.ylabel('Capital Attained')
-    #plt.show()
     return
 
 def test(test_env, Q):
@@ -95,17 +87,15 @@ def real_data():
     test_env = TradingEnv(test_data, init_capital=100, is_discrete=False)
     print(Q.q_table)
     test(test_env, Q)
-    #2:45
     return
 
 def iid_data():
     print('For IID Source')
     #get train and test data for 5000 days where return rate is i.i.d
-    #train_data, test_data = split_data(create_iid(5000))
-    #test_data.index -= (train_data.shape[0] + test_data.shape[0])-100
-    train_data = pd.read_pickle("data/train_data_iid")
-    test_data = pd.read_pickle("data/test_data_iid")
-
+    train_data, test_data = split_data(create_iid(5000))
+    test_data.index -= (train_data.shape[0] + test_data.shape[0])-100
+    #train_data = pd.read_pickle("data/train_data_iid")
+    #test_data = pd.read_pickle("data/test_data_iid")
     #init trading enviorment
     env = TradingEnv(train_data, init_capital=100, is_discrete = False)
     #init q learing table
@@ -120,10 +110,10 @@ def iid_data():
 def markov_data():
     print('For Markov Source')
     #get train and test for 5000 days where return rates are dependent on previous day
-    #train_data, test_data = split_data(create_markov(5000))
-    #test_data.index -= (train_data.shape[0] + test_data.shape[0]) - 100
-    train_data = pd.read_pickle("data/train_data_mc")
-    test_data = pd.read_pickle("data/test_data_mc")
+    train_data, test_data = split_data(create_markov(5000))
+    test_data.index -= (train_data.shape[0] + test_data.shape[0]) - 100
+    #train_data = pd.read_pickle("data/train_data_mc")
+    #test_data = pd.read_pickle("data/test_data_mc")
     #init trading envioourment
     env = TradingEnv(train_data, init_capital=100, is_discrete=True)
     #init q learning Q_table
@@ -133,6 +123,10 @@ def markov_data():
     test_env = TradingEnv(test_data, init_capital=100, is_discrete=True)
     print(Q.q_table)
     test(test_env, Q)
+    return
+
+def mix():
+    print('For a mixture of Markov and IID Source')
     return
 
 
@@ -146,4 +140,5 @@ if __name__ == '__main__':
     if source_type == 'markov': markov_data()
     elif source_type == 'iid': iid_data()
     elif source_type == 'real': real_data()
+    elif source_type == 'mix': mix()
     else: print('Invalid arguement.')
