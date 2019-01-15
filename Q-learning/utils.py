@@ -57,13 +57,8 @@ def create_iid(days):
         stock_1.append(np.random.uniform(-0.1, .1))
         stock_2.append(np.random.uniform(-0.1, .1))
         stock_3.append(np.random.uniform(-0.1, .1))
-<<<<<<< HEAD
         dummy.append(0.0)
-=======
-        dummy.append(0.05)
 
-
->>>>>>> aeb19fa44cb203acc7445fc928762e797cb41e13
     #make into pandas obj
     data = pd.DataFrame(
         {'stock_1': stock_1,
@@ -90,12 +85,6 @@ def create_markov(days):
     stock_3_transition_matrix = np.array([[0.2, 0.4, 0.4],
                                           [0.4, 0.2, 0.4],
                                           [0.4, 0.4, 0.2]])
-<<<<<<< HEAD
-    dummy = []
-    stock_1 = []
-    stock_2 = []
-    stock_3 = []
-=======
 
     # stock 4 - big reward and more predicable
     stock_4_rates = np.array([-0.25, 0.0, 0.25])
@@ -103,14 +92,12 @@ def create_markov(days):
                                           [0.05, 0.9, 0.05],
                                           [0.05, 0.05, 0.9]])
 
-    #dummy = []
-
     stock_1 = []
     stock_2 = []
     stock_3 = []
     stock_4 = []
+    dummy = []
 
->>>>>>> aeb19fa44cb203acc7445fc928762e797cb41e13
     #init previous value for markov chains
     index_1 = 0
     index_2 = 0
@@ -122,28 +109,19 @@ def create_markov(days):
         index_1 = np.where(stock_1_rates == stock_1[-1])[0][0]
         stock_2.append(np.random.choice(a=stock_2_rates, p=stock_2_transition_matrix[index_2]))
         index_2 = np.where(stock_2_rates == stock_2[-1])[0][0]
-        #stock_2_transition_matrix = np.dot(stock_2_transition_matrix,stock_2_transition_matrix)
         stock_3.append(np.random.choice(a=stock_3_rates, p=stock_3_transition_matrix[index_3]))
         index_3 = np.where(stock_3_rates == stock_3[-1])[0][0]
-        #stock_3_transition_matrix = np.dot(stock_3_transition_matrix,stock_3_transition_matrix)
-<<<<<<< HEAD
-        dummy.append(0.0)
-=======
-
         stock_4.append(np.random.choice(a=stock_4_rates, p=stock_4_transition_matrix[index_4]))
         index_4 = np.where(stock_4_rates == stock_4[-1])[0][0]
+        dummy.append(0.0)
 
-        #dummy.append(0.0)
-
-
->>>>>>> aeb19fa44cb203acc7445fc928762e797cb41e13
     #make into pandas obj
     data = pd.DataFrame(
         {'stock_1': stock_1,
          'stock_2': stock_2,
          'stock_3': stock_3,
          'stock_4': stock_4,
-         #'dummy': dummy
+         'dummy': dummy
         })
     return data
 
@@ -165,7 +143,7 @@ def create_markov_memory_2(days):
 
     #stock_3_rates = np.array([-0.25, 0.0, 0.25])
 
-    return 
+    return
 
 if __name__ == '__main__':
     #example on how you can call it
