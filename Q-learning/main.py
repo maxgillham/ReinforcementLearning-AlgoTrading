@@ -11,7 +11,7 @@ from Q_table import QLearningTable
 from utils import *
 
 
-episodes = 10
+episodes = 50
 def update(env, Q):
     ending_cap = []
     #by default the training is set to be 100 episodes per training
@@ -127,6 +127,18 @@ def markov_data():
 
 def mix():
     print('For a mixture of Markov and IID Source')
+    #get train and test data for 5000 days
+    train_data, test_data = split_data(create_markov_iid_mix(5000))
+    test_data.index -= (train_data.shape[0] + test_data.shape[0]) - 100
+    #init trading env, is not discrete for iid from np uniform module
+    env = TradingEnv(test_data, init_capital=100, is_discrete=False)
+    #init q learning table
+    Q = QLearningTable(actions=list(range(env.action_space.n)))
+    #training method
+    update(env, Q)
+    test_env = TradingEnv(test_data, init_capital=100, is_discrete=False)
+    print(Q.q_table)
+    test(test_env, Q)
     return
 
 
