@@ -139,9 +139,11 @@ def markov_data():
 if __name__ == '__main__':
     try:
         source_type = sys.argv[1]
-        if source_type == 'markov': markov_data()
-        elif source_type == 'iid': iid_data()
-        else: real_data()
     except:
-        print('\nArguement options are: \n1. markov\n2. iid\n3. real')
-        source_type = 'markov'
+        print('\nMust pass arguement for source type. Arguement options are: \n1. markov\n2. iid\n3. real')
+        source_type = 'null'
+
+    if source_type == 'markov': markov_data()
+    elif source_type == 'iid': iid_data()
+    elif source_type == 'real': real_data()
+    else: print('Invalid arguement.')
