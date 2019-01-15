@@ -1,5 +1,6 @@
 import time
 import os
+import sys
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -102,9 +103,9 @@ def iid_data():
     #get train and test data for 5000 days where return rate is i.i.d
     #train_data, test_data = split_data(create_iid(5000))
     #test_data.index -= (train_data.shape[0] + test_data.shape[0])-100
-    train_data = pd.read_pickle("train_data_iid")
-    test_data = pd.read_pickle("test_data_iid")
-   
+    train_data = pd.read_pickle("data/train_data_iid")
+    test_data = pd.read_pickle("data/test_data_iid")
+
     #init trading enviorment
     env = TradingEnv(train_data, init_capital=100, is_discrete = False)
     #init q learing table
@@ -121,8 +122,8 @@ def markov_data():
     #get train and test for 5000 days where return rates are dependent on previous day
     #train_data, test_data = split_data(create_markov(5000))
     #test_data.index -= (train_data.shape[0] + test_data.shape[0]) - 100
-    train_data = pd.read_pickle("train_data_mc")
-    test_data = pd.read_pickle("test_data_mc")
+    train_data = pd.read_pickle("data/train_data_mc")
+    test_data = pd.read_pickle("data/test_data_mc")
     #init trading envioourment
     env = TradingEnv(train_data, init_capital=100, is_discrete=True)
     #init q learning Q_table
@@ -136,18 +137,11 @@ def markov_data():
 
 
 if __name__ == '__main__':
-
-    '''
-    For Markov source
-    '''
-    #markov_data()
-
-    '''
-    For i.i.d source
-    '''
-    iid_data()
-
-    '''
-    For real data
-    '''
-    #real_data()
+    try:
+        source_type = sys.argv[1]
+        if source_type == 'markov': markov_data()
+        elif source_type == 'iid': iid_data()
+        else: real_data()
+    except:
+        print('\nArguement options are: \n1. markov\n2. iid\n3. real')
+        source_type = 'markov'
