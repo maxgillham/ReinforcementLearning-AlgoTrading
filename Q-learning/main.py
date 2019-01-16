@@ -125,6 +125,24 @@ def markov_data():
     test(test_env, Q)
     return
 
+def markov_data2():
+    print('For Markov Memory 2 Source')
+    #get train and test for 5000 days where return rates are dependent on previous day
+    train_data, test_data = split_data(create_markov_memory_2(5000))
+    test_data.index -= (train_data.shape[0] + test_data.shape[0]) - 100
+    #train_data = pd.read_pickle("data/train_data_mc")
+    #test_data = pd.read_pickle("data/test_data_mc")
+    #init trading envioourment
+    env = TradingEnv(train_data, init_capital=100, is_discrete=True)
+    #init q learning Q_table
+    Q = QLearningTable(actions=list(range(env.action_space.n)))
+    #training method
+    update(env, Q)
+    test_env = TradingEnv(test_data, init_capital=100, is_discrete=True)
+    print(Q.q_table)
+    test(test_env, Q)
+    return
+
 def mix():
     print('For a mixture of Markov and IID Source')
     #get train and test data for 5000 days
@@ -141,15 +159,16 @@ def mix():
     test(test_env, Q)
     return
 
-
 if __name__ == '__main__':
     try:
         source_type = sys.argv[1]
     except:
-        print('\nMust pass arguement for source type. Arguement options are: \n1. markov\n2. iid\n3. real')
+        print('\nMust pass arguement for source type. Arguement options are: \n1. markov\n2. markov2\n3. iid\n4. real'
+              '\n5. mix')
         source_type = 'null'
 
     if source_type == 'markov': markov_data()
+    elif source_type == 'markov2': markov_data2()
     elif source_type == 'iid': iid_data()
     elif source_type == 'real': real_data()
     elif source_type == 'mix': mix()
