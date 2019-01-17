@@ -20,18 +20,9 @@ class TradingEnv(gym.Env):
         self.current_capital = None
         self.is_discrete = is_discrete
 
-        #actually just make actition 0 1 or 2, as invest all money in
-        #IBM, Microsoft, Qualcom, or "dummy stock" for 1 day
-        self.action_space = spaces.Discrete(4)
-        #observation space
-        capital_range = [0, 2*init_capital]
-        stock_return_rate_range = [0, get_max_and_min(self.stock_return_rate_history)[0]]
-        #self.observation_space = spaces.Tuple((
-            #spaces.Discrete(stock_return_rate_range),
-            #spaces.Discrete(capital_range)))
-        self.observation_space = spaces.MultiDiscrete([capital_range, stock_return_rate_range])
-        #self.observation_space = spaces.Discrete(capital_range)
-
+        #actions are 0, 1, 2, ..., n indicating investing all money in instrument
+        #0, 1, 2, ..., n respectivly for 1 time period
+        self.action_space = spaces.Discrete(train_data.shape[1])
         #seed and reset
         self._seed()
         self._reset()
