@@ -188,7 +188,6 @@ def create_markov_memory_2(days):
         })
     return data
 
-
 #2 markov sources and 2 i.i.d sources
 def create_markov_iid_mix(days):
     #stock 1 - low reward more predicable
