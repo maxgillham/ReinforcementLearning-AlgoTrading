@@ -10,9 +10,9 @@ from Q_table import QLearningTable
 
 from utils import *
 
-
-episodes = 50
 def update(env, Q):
+    try: episodes = int(sys.argv[2])
+    except: episodes = 10
     ending_cap = []
     #by default the training is set to be 100 episodes per training
     for episode in range(episodes):
@@ -67,7 +67,7 @@ def test(test_env, Q):
 
     plt.scatter(np.arange(len(test_cap)), test_cap, marker='.', c='k' )
 
-    plt.title('Capital Attained at Each Decision with ' + str(episodes) + ' Ep of Training')
+    plt.title('Capital Attained at Each Decision')
     plt.xlabel('Day')
     plt.ylabel('Capital Attained')
     plt.show()
@@ -149,7 +149,7 @@ def mix():
     train_data, test_data = split_data(create_markov_iid_mix(5000))
     test_data.index -= (train_data.shape[0] + test_data.shape[0]) - 100
     #init trading env, is not discrete for iid from np uniform module
-    env = TradingEnv(test_data, init_capital=100, is_discrete=False)
+    env = TradingEnv(train_data, init_capital=100, is_discrete=False)
     #init q learning table
     Q = QLearningTable(actions=list(range(env.action_space.n)))
     #training method
