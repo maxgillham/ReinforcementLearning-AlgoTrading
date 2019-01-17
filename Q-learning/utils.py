@@ -143,15 +143,39 @@ def create_markov(days):
 
     return data
 
-if __name__ == '__main__':
-    #example on how you can call it
-    #return_rates = get_data()
-    #print('Data Shape: ', return_rates.shape)
-    #print('Column Headers are: ', list(return_rates))
-    #print('First 10 return rates for IBM: \n', return_rates['ibm'].iloc[0:11])
-    #return_rates_train, return_rates_test = split_data(return_rates)
-    #print('Training Shape: ', return_rates_train.shape, '\nTesting Shape: ', return_rates_test.shape)
-
-    #create_iid(15)
-    markov_data = create_markov(50)
-    print(markov_data)
+#2 markov sources and 2 i.i.d sources
+def create_markov_iid_mix(days):
+    #stock 1 - low reward more predicable
+    stock_1_rates = np.array([-0.05, 0.0, 0.05])
+    stock_1_transition_matrix = np.array([[0.9, 0.05, 0.05],
+                                          [0.05, 0.9, 0.05],
+                                          [0.05, 0.05, 0.9]])
+    # stock 2 - larger reward less predictable
+    stock_2_rates = np.array([-0.1, 0.0, 0.1])
+    stock_2_transition_matrix = np.array([[0.8, 0.1, 0.1],
+                                          [0.1, 0.8, 0.1],
+                                          [0.1, 0.1, 0.8]])
+    #init lists for 4 stocks
+    stock_1 = []
+    stock_2 = []
+    stock_3 = []
+    stock_4 = []
+    #init index for markov sources
+    index_1 = 0
+    index_2 = 0
+    #create instances of each source for num of days
+    for _ in range(days):
+        stock_1.append(np.random.choice(a=stock_1_rates, p=stock_1_transition_matrix[index_1]))
+        index_1 = np.where(stock_1_rates == stock_1[-1])[0][0]
+        stock_2.append(np.random.choice(a=stock_2_rates, p=stock_2_transition_matrix[index_2]))
+        index_2 = np.where(stock_2_rates == stock_2[-1])[0][0]
+        stock_3.append(np.random.uniform(-.01 , 0.01))
+        stock_4.append(np.random.uniform(-0.1, 0.1))
+    #make into pandas obj
+    data = pd.DataFrame(
+        {'MC 1': stock_1,
+         'MC 2': stock_2,
+         'IID 1': stock_3,
+         'IID 2': stock_4
+        })
+    return data
