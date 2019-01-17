@@ -25,7 +25,6 @@ def update(env, Q):
         while not done:
             # RL choose action based on observation
             action = Q.choose_action(env._get_obs())
-
             # RL take action and get next observation and reward
             # return next step observation_, reward from env
             observation_, reward, done = env._step(action)
@@ -130,8 +129,6 @@ def markov_data2():
     #get train and test for 5000 days where return rates are dependent on previous day
     train_data, test_data = split_data(create_markov_memory_2(5000))
     test_data.index -= (train_data.shape[0] + test_data.shape[0]) - 100
-    #train_data = pd.read_pickle("data/train_data_mc")
-    #test_data = pd.read_pickle("data/test_data_mc")
     #init trading envioourment
     env = TradingEnv(train_data, init_capital=100, is_discrete=True)
     #init q learning Q_table
