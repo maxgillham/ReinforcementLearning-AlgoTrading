@@ -5,6 +5,7 @@ import numpy as np
 
 from gym import spaces
 from gym.utils import seeding
+from scipy import misc
 from utils import *
 
 class TradingEnv(gym.Env):
@@ -22,7 +23,8 @@ class TradingEnv(gym.Env):
 
         #actions are 0, 1, 2, ..., n indicating investing all money in instrument
         #0, 1, 2, ..., n respectivly for 1 time period
-        self.action_space = spaces.Discrete(train_data.shape[1])
+        self.action_space_size = int(train_data.shape[1] + misc.comb(train_data.shape[1], 2))
+        self.action_space = spaces.Discrete(self.action_space_size)
         #seed and reset
         self._seed()
         self._reset()
@@ -55,12 +57,12 @@ class TradingEnv(gym.Env):
         #return rate is return rate for that day
         self.stock_return_rate = self.stock_return_rate_history.loc[self.current_step]
         #new value is return rate of chosen stock times previous capital
-        new_val = (self.stock_return_rate[action]+1) * prev_capital
+        #new_val = (self.stock_return_rate[action]+1) * prev_capital
         #current reward , log base 2 of new capital / init investment
-        if new_val > prev_capital: reward = math.log((new_val-prev_capital),2)
-        elif new_val == prev_capital: reward = 0
-        else: reward = -math.log(abs(new_val - prev_capital),2)
-        #reward = new_val/prev_capital
+        #if new_val > prev_capital: reward = math.log((new_val-prev_capital),2)
+        #elif new_val == prev_capital: reward = 0
+        #else: reward = -math.log(abs(new_val - prev_capital),2)
+        new_val, reward = self._invest(prev_capital, action)
         self.current_capital = round(new_val)
         #done if on the last step, or we have doubled out investment
         # or self.current_capital >= 4*self.init_capital
@@ -69,3 +71,70 @@ class TradingEnv(gym.Env):
         else:
             done_flag = False
         return self._get_obs(), reward, done_flag
+
+    def _invest(self, prev_capital, action):
+        #if investing all money in one stock
+        if action in range(self.n_stocks): new_val = (self.stock_return_rate[action]+1) * prev_capital
+        else:
+            index_1 = action%self.n_stocks
+            index_2 = index_1 - action//self.n_stocks
+            new_val = (self.stock_return_rate[index_1]+1)*(prev_capital/2)
+            new_val += (self.stock_return_rate[index_2]+1)*(prev_capital/2)
+        #reward function for new value
+        if new_val > prev_capital: reward = math.log((new_val-prev_capital),2)
+        elif new_val == prev_capital: reward = 0
+        else: reward = -math.log(abs(new_val - prev_capital),2)
+        return new_val, reward
+
+"""
+This is some notes I took to figure out a way to map the discrete action space to
+how the data is indexed
+
+
+r0, r1, r2
+[0, 0.5, 1]
+
+0 [1,0,0] -return_rates(0)
+1 [0,1,0] -return_rates(1)
+2 [0,0,1] -return_rates(2)
+3 [.5,0,0.5] -return_rates(0), return_rates(2)
+4 [.5,.5,0] -return_rates(1), return_rates(0)
+5 [0,.5,.5] - return_rates(1), return_rates(2)
+
+n=3
+i is action
+if choice in range(n)
+    return_rates(i)
+else
+    x = i mod n
+    diff = floor(i/n)
+    return_rates(x)
+    return_rates(x-diff)
+"""
+
+"""
+r0, r1, r2, r3
+[0,0.5,1]
+
+0 [1,0,0,0] - return_rates(0)
+1 [0,1,0,0] - return_rates(1)
+2 [0,0,1,0] - return_rates(2)
+3 [0,0,0,1] - return_rates(3)
+4 [.5,0,0,.5] - return_rates(0), return_rates(3)
+5 [.5,.5,0,0] - return_rates(0), return_rates(1)
+6 [0,.5,.5,0] - return_rates(1), return_rates(2)
+7 [0,0,.5,.5] - return_rates(2), return_rates(3)
+8 [.5,0,.5,0] - return_rates(0), return_rates(2)
+9 [0,.5,0,.5] - return_rates(1), return_rates(3)
+
+n=4
+i is action
+if choice in range(n)
+    return_rates(i)
+else
+    x = i mod n
+    diff = floor(i/n)
+    return_rates(x)
+    return_rates(x-diff)
+
+"""
