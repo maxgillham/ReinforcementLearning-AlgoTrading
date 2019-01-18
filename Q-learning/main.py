@@ -80,7 +80,7 @@ def real_data():
     #init trading env
     env = TradingEnv(train_data, init_capital=100, is_discrete=False)
     #init Q table
-    Q = QLearningTable(actions=list(range(env.action_space.n)))
+    Q = QLearningTable(actions=list(range(env.action_space_size)))
     #train method
     update(env, Q)
     test_env = TradingEnv(test_data, init_capital=100, is_discrete=False)
@@ -98,7 +98,7 @@ def iid_data():
     #init trading enviorment
     env = TradingEnv(train_data, init_capital=100, is_discrete = False)
     #init q learing table
-    Q = QLearningTable(actions=list(range(env.action_space.n)))
+    Q = QLearningTable(actions=list(range(env.action_space_size)))
     #traing method
     update(env, Q)
     #print(Q.q_table)
@@ -116,7 +116,7 @@ def markov_data():
     #init trading envioourment
     env = TradingEnv(train_data, init_capital=100, is_discrete=True)
     #init q learning Q_table
-    Q = QLearningTable(actions=list(range(env.action_space.n)))
+    Q = QLearningTable(actions=list(range(env.action_space_size)))
     #training method
     update(env, Q)
     test_env = TradingEnv(test_data, init_capital=100, is_discrete=True)
@@ -132,7 +132,7 @@ def markov_data2():
     #init trading envioourment
     env = TradingEnv(train_data, init_capital=100, is_discrete=True)
     #init q learning Q_table
-    Q = QLearningTable(actions=list(range(env.action_space.n)))
+    Q = QLearningTable(actions=list(range(env.action_space_size)))
     #training method
     update(env, Q)
     test_env = TradingEnv(test_data, init_capital=100, is_discrete=True)
@@ -148,7 +148,7 @@ def mix():
     #init trading env, is not discrete for iid from np uniform module
     env = TradingEnv(train_data, init_capital=100, is_discrete=False)
     #init q learning table
-    Q = QLearningTable(actions=list(range(env.action_space.n)))
+    Q = QLearningTable(actions=list(range(env.action_space_size)))
     #training method
     update(env, Q)
     test_env = TradingEnv(test_data, init_capital=100, is_discrete=False)
