@@ -56,16 +56,8 @@ class TradingEnv(gym.Env):
         self.current_step += 1
         #return rate is return rate for that day
         self.stock_return_rate = self.stock_return_rate_history.loc[self.current_step]
-        #new value is return rate of chosen stock times previous capital
-        #new_val = (self.stock_return_rate[action]+1) * prev_capital
-        #current reward , log base 2 of new capital / init investment
-        #if new_val > prev_capital: reward = math.log((new_val-prev_capital),2)
-        #elif new_val == prev_capital: reward = 0
-        #else: reward = -math.log(abs(new_val - prev_capital),2)
         new_val, reward = self._invest(prev_capital, action)
         self.current_capital = round(new_val)
-        #done if on the last step, or we have doubled out investment
-        # or self.current_capital >= 4*self.init_capital
         if self.current_step == self.n_steps - 1:
             done_flag = True
         else:
