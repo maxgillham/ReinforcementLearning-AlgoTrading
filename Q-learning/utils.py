@@ -54,16 +54,16 @@ def create_iid(days):
     dummy = []
     #randomly choose for each day
     for _ in range(days):
-        stock_1.append(np.random.uniform(-0.1, .1))
-        stock_2.append(np.random.uniform(-0.1, .1))
-        stock_3.append(np.random.uniform(-0.1, .1))
+        stock_1.append(np.random.choice([-0.1,0.1], p=[.5,.5]))
+        stock_2.append(np.random.choice([-0.1,0.1], p=[.5,.5]))
+        stock_3.append(np.random.choice([-0.1,0.1], p=[.5,.5]))
         dummy.append(0.0)
 
     #make into pandas obj
     data = pd.DataFrame(
         {'stock_1': stock_1,
-         'stock_2': stock_2,
-         'stock_3': stock_3,
+         #'stock_2': stock_2,
+         #'stock_3': stock_3,
          'dummy': dummy
         })
     return data
