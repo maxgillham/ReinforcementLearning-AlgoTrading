@@ -9,10 +9,11 @@ from scipy import misc
 from utils import *
 
 class TradingEnv(gym.Env):
-    def __init__(self, train_data, init_capital, is_discrete):
+    def __init__(self, train_data, init_capital, is_discrete, source):
         self.stock_return_rate_history = train_data
         self.n_stocks = train_data.shape[1]
         self.n_steps = train_data.shape[0]
+        self.source = source
 
         self.init_capital = init_capital
         self.current_step = None
@@ -41,13 +42,16 @@ class TradingEnv(gym.Env):
         return self._get_obs()
 
     def _get_obs(self):
-        return_rate_list_temp = list(self.stock_return_rate)
-        if not self.is_discrete:
-            for i in range(len(return_rate_list_temp)):
-                if return_rate_list_temp[i] < -0.01: return_rate_list_temp[i] = -1
-                elif return_rate_list_temp[i] > 0.01: return_rate_list_temp[i] = 1
-                else: return_rate_list_temp[i] = 0
-        return return_rate_list_temp
+        if self.source == 'Real'  or self.source == 'M':
+            return_rate_list_temp = list(self.stock_return_rate)
+            if not self.is_discrete:
+                for i in range(len(return_rate_list_temp)):
+                    if return_rate_list_temp[i] < -0.01: return_rate_list_temp[i] = -1
+                    elif return_rate_list_temp[i] > 0.01: return_rate_list_temp[i] = 1
+                    else: return_rate_list_temp[i] = 0
+            return return_rate_list_temp
+        else:
+            return [0,0,0,0]
 
     def _step(self, action):
         #previous capital is now capital before action
