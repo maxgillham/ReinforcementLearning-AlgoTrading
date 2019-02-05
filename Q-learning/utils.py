@@ -54,16 +54,16 @@ def create_iid(days):
     dummy = []
     #randomly choose for each day
     for _ in range(days):
-        stock_1.append(np.random.uniform(-0.1, .1))
-        stock_2.append(np.random.uniform(-0.1, .1))
-        stock_3.append(np.random.uniform(-0.1, .1))
+        stock_1.append(np.random.choice([-0.1,0.1], p=[.5,.5]))
+        stock_2.append(np.random.choice([-0.1,0.1], p=[.5,.5]))
+        stock_3.append(np.random.choice([-0.1,0.1], p=[.5,.5]))
         dummy.append(0.0)
 
     #make into pandas obj
     data = pd.DataFrame(
         {'stock_1': stock_1,
-         'stock_2': stock_2,
-         'stock_3': stock_3,
+         #'stock_2': stock_2,
+         #'stock_3': stock_3,
          'dummy': dummy
         })
     return data
@@ -86,16 +86,9 @@ def create_markov(days):
                                           [0.4, 0.2, 0.4],
                                           [0.4, 0.4, 0.2]])
 
-    # stock 4 - big reward and more predicable
-    stock_4_rates = np.array([-0.25, 0.0, 0.25])
-    stock_4_transition_matrix = np.array([[0.9, 0.05, 0.05],
-                                          [0.05, 0.9, 0.05],
-                                          [0.05, 0.05, 0.9]])
-
     stock_1 = []
     stock_2 = []
     stock_3 = []
-    stock_4 = []
     dummy = []
 
     #init previous value for markov chains
@@ -111,8 +104,6 @@ def create_markov(days):
         index_2 = np.where(stock_2_rates == stock_2[-1])[0][0]
         stock_3.append(np.random.choice(a=stock_3_rates, p=stock_3_transition_matrix[index_3]))
         index_3 = np.where(stock_3_rates == stock_3[-1])[0][0]
-        stock_4.append(np.random.choice(a=stock_4_rates, p=stock_4_transition_matrix[index_4]))
-        index_4 = np.where(stock_4_rates == stock_4[-1])[0][0]
         dummy.append(0.0)
 
     #make into pandas obj
@@ -120,7 +111,6 @@ def create_markov(days):
         {'stock_1': stock_1,
          'stock_2': stock_2,
          'stock_3': stock_3,
-         'stock_4': stock_4,
          'dummy': dummy
         })
     return data
@@ -139,7 +129,7 @@ def create_markov_memory_2(days):
                                     [0.1, 0.8, 0.1],
                                     [0.1, 0.1, 0.8]])
     stock_2_double_step = np.dot(stock_2_single_step, stock_2_single_step)
-    
+
     #stock 2 values and 1st order and 2nd order transition matrices
     stock_3_rates = np.array([-0.25, 0.0, 0.25])
     stock_3_single_step = np.array([[0.2, 0.4, 0.4],
@@ -147,25 +137,15 @@ def create_markov_memory_2(days):
                                     [0.4, 0.4, 0.2]])
     stock_3_double_step = np.dot(stock_3_single_step, stock_3_single_step)
 
-
-    # stock 4 - big reward and more predicable
-    stock_4_rates = np.array([-0.25, 0.0, 0.25])
-    stock_4_single_step = np.array([[0.9, 0.05, 0.05],
-                                    [0.05, 0.9, 0.05],
-                                    [0.05, 0.05, 0.9]])
-    stock_4_double_step = np.dot(stock_4_single_step, stock_4_single_step)
-
     stock_1 = []
     stock_2 = []
     stock_3 = []
-    stock_4 = []
     dummy = []
 
     #init previous value for markov chains
     index_1 = 0
     index_2 = 0
     index_3 = 0
-    index_4 = 0
     #randomly choose for each day
     for _ in range(days):
         stock_1.append(np.random.choice(a=stock_1_rates, p=stock_1_double_step[index_1]))
@@ -174,8 +154,6 @@ def create_markov_memory_2(days):
         index_2 = np.where(stock_2_rates == stock_2[-1])[0][0]
         stock_3.append(np.random.choice(a=stock_3_rates, p=stock_3_double_step[index_3]))
         index_3 = np.where(stock_3_rates == stock_3[-1])[0][0]
-        stock_4.append(np.random.choice(a=stock_4_rates, p=stock_4_double_step[index_4]))
-        index_4 = np.where(stock_4_rates == stock_4[-1])[0][0]
         dummy.append(0.0)
 
     #make into pandas obj
@@ -183,7 +161,6 @@ def create_markov_memory_2(days):
         {'stock_1': stock_1,
          'stock_2': stock_2,
          'stock_3': stock_3,
-         'stock_4': stock_4,
          'dummy': dummy
         })
     return data
