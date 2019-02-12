@@ -35,7 +35,8 @@ class TradingEnv(gym.Env):
         return[seed]
 
     def _reset(self):
-        self.current_step = 1
+        if self.source == 'M2': self.current_step = 2 #if mem 2 we need to to start at 2 for obs space
+        else: self.current_step = 1
         #self.stock_owned = [0]*self.n_stocks
         self.stock_return_rate = self.stock_return_rate_history.loc[self.current_step]
         self.current_capital = self.init_capital
@@ -50,6 +51,9 @@ class TradingEnv(gym.Env):
                     elif return_rate_list_temp[i] > 0.01: return_rate_list_temp[i] = 1
                     else: return_rate_list_temp[i] = 0
             return return_rate_list_temp
+        elif self.source =='M2':
+            return_rates = self.stock_return_rate_history.loc[self.current_step-1:self.current_step]
+            return np.append(return_rates.values[0], return_rates.values[1])
         else:
             return [0,0,0,0]
 

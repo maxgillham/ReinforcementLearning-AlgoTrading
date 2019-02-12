@@ -116,51 +116,31 @@ def create_markov(days):
     return data
 
 def create_markov_memory_2(days):
-    #stock 1 values and 1st order and 2nd order transition matrices
-    stock_1_rates = np.array([-0.05, 0.0, 0.05])
-    stock_1_single_step = np.array([[0.9, 0.05, 0.05],
-                                    [0.05, 0.9, 0.05],
-                                    [0.05, 0.05, 0.9]])
-    stock_1_double_step = np.dot(stock_1_single_step, stock_1_single_step)
-
-    #stock 2 values and 1st order and 2nd order transition matrices
-    stock_2_rates = np.array([-0.1, 0.0, 0.1])
-    stock_2_single_step = np.array([[0.8, 0.1, 0.1],
-                                    [0.1, 0.8, 0.1],
-                                    [0.1, 0.1, 0.8]])
-    stock_2_double_step = np.dot(stock_2_single_step, stock_2_single_step)
-
-    #stock 2 values and 1st order and 2nd order transition matrices
-    stock_3_rates = np.array([-0.25, 0.0, 0.25])
-    stock_3_single_step = np.array([[0.2, 0.4, 0.4],
-                                    [0.4, 0.2, 0.4],
-                                    [0.4, 0.4, 0.2]])
-    stock_3_double_step = np.dot(stock_3_single_step, stock_3_single_step)
-
+    stock_1_rates = np.array([-.1, 0, 0.1]) #possible return rates
+    #memory two transistion matrix, shape 3x3
+    stock_1_transition_matrix = np.array([[[0.2, 0.3, 0.5],
+                                           [0.1, 0.2, 0.7],
+                                           [0.4, 0.2, 0.4]],
+                                          [[0.2, 0.1, 0.7],
+                                           [0.1, 0.1, 0.8],
+                                           [0.5, 0.2, 0.3]],
+                                          [[0.4, 0.6, 0.0],
+                                           [0.2, 0.5, 0.3],
+                                           [0.0, 0.5, 0.5]]])
+    #using a list to permit item assignment
+    stock_1_prev_indices = [0,0]
     stock_1 = []
-    stock_2 = []
-    stock_3 = []
     dummy = []
-
-    #init previous value for markov chains
-    index_1 = 0
-    index_2 = 0
-    index_3 = 0
-    #randomly choose for each day
     for _ in range(days):
-        stock_1.append(np.random.choice(a=stock_1_rates, p=stock_1_double_step[index_1]))
-        index_1 = np.where(stock_1_rates == stock_1[-1])[0][0]
-        stock_2.append(np.random.choice(a=stock_2_rates, p=stock_2_double_step[index_2]))
-        index_2 = np.where(stock_2_rates == stock_2[-1])[0][0]
-        stock_3.append(np.random.choice(a=stock_3_rates, p=stock_3_double_step[index_3]))
-        index_3 = np.where(stock_3_rates == stock_3[-1])[0][0]
+        stock_1.append(np.random.choice(a=stock_1_rates, p=stock_1_transition_matrix[stock_1_prev_indices[0], stock_1_prev_indices[1]]))
+        #assign 2 most recent value to most recent value
+        stock_1_prev_indices[0] = stock_1_prev_indices[1]
+        #assign lastest value to most recent
+        stock_1_prev_indices[1] = np.where(stock_1_rates == stock_1[-1])[0][0]
         dummy.append(0.0)
-
     #make into pandas obj
     data = pd.DataFrame(
         {'stock_1': stock_1,
-         'stock_2': stock_2,
-         'stock_3': stock_3,
          'dummy': dummy
         })
     return data
@@ -201,3 +181,17 @@ def create_markov_iid_mix(days):
          'IID 2': stock_4
         })
     return data
+
+
+
+if __name__ == "__main__":
+    train = create_markov_memory_2(5)
+    print('history', train)
+    current_step = 2
+    stock_return_rate = train.loc[current_step-1:current_step]
+    print(stock_return_rate)
+    print(stock_return_rate.values[0])
+    print(stock_return_rate.values[1])
+    test = np.append(stock_return_rate.values[0], stock_return_rate.values[1])
+    print(test)
+    #print('\nas list', list(stock_return_rate[0]))
