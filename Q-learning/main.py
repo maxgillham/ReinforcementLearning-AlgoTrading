@@ -157,6 +157,21 @@ def mix():
     test(test_env, Q)
     return
 
+def train_markov_real():
+    #get markov to train q table on
+    train_data, ignore_test_data = split_data(create_markov(5000))
+    env = TradingEnv(train_data, init_capital=100, is_discrete=True, source='M')
+    Q = QLearningTable(actions=list(range(env.action_space_size)))
+    #training method
+    update(env, Q)
+    #get real data for testing
+    real_train_data, real_test_data = split_data(round_return_rate(get_data()))
+    test_env = TradingEnv(real_test_data, init_capital=100, is_discrete=True, source='Real')
+    print(Q.q_table)
+    test(test_env, Q)
+    return
+
+
 if __name__ == '__main__':
     try:
         source_type = sys.argv[1]
@@ -171,3 +186,12 @@ if __name__ == '__main__':
     elif source_type == 'real': real_data()
     elif source_type == 'mix': mix()
     else: print('Invalid arguement.')
+
+
+    ## To do
+    # Fix action quantization to be 10 percent intervals
+    # Reduce to two assets for ease of use
+    # Try training on markov data and testing on real data
+    # Try training on real data and testing on real data
+    # Try training on markov and testing on ibm, micro and qual seperatly
+    # Make markov source where you can specify the size of the memory

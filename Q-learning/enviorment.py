@@ -11,20 +11,18 @@ from utils import *
 class TradingEnv(gym.Env):
     def __init__(self, train_data, init_capital, is_discrete, source):
         self.stock_return_rate_history = train_data
-        self.n_stocks = train_data.shape[1]
+        self.n_stocks = train_data.shape[1] #should be only 2
         self.n_steps = train_data.shape[0]
         self.source = source
-
         self.init_capital = init_capital
         self.current_step = None
         self.stock_owned = None
         self.stock_return_rate = None
         self.current_capital = None
         self.is_discrete = is_discrete
-
-        #actions are 0, 1, 2, ..., n indicating investing all money in instrument
-        #0, 1, 2, ..., n respectivly for 1 time period
-        self.action_space_size = int(train_data.shape[1] + misc.comb(train_data.shape[1], 2))
+        self.partition_ranges = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
+        # investment distribution (0/100), (10/90), (20/80), (30/70)...
+        self.action_space_size = len(self.partition_ranges)
         self.action_space = spaces.Discrete(self.action_space_size)
         #seed and reset
         self._seed()
@@ -73,68 +71,12 @@ class TradingEnv(gym.Env):
         return self._get_obs(), reward, done_flag
 
     def _invest(self, prev_capital, action):
-        #if investing all money in one stock
-        if action in range(self.n_stocks): new_val = (self.stock_return_rate[action]+1) * prev_capital
-        else:
-            index_1 = action%self.n_stocks
-            index_2 = index_1 - action//self.n_stocks
-            new_val = (self.stock_return_rate[index_1]+1)*(prev_capital/2)
-            new_val += (self.stock_return_rate[index_2]+1)*(prev_capital/2)
+        #partition of cash for stock 1 and 2 respectivly
+        cash_for_stock_1 = self.partition_ranges[action]*prev_capital
+        cash_for_stock_2 = (1-self.partition_ranges[action])*prev_capital
+        new_val = ((self.stock_return_rate[0]+1)*cash_for_stock_1) + ((self.stock_return_rate[1]+1)*cash_for_stock_2)
         #reward function for new value
         if new_val > prev_capital: reward = math.log((new_val-prev_capital),2)
         elif new_val == prev_capital: reward = 0
         else: reward = -math.log(abs(new_val - prev_capital),2)
         return new_val, reward
-
-"""
-This is some notes I took to figure out a way to map the discrete action space to
-how the data is indexed
-
-
-r0, r1, r2
-[0, 0.5, 1]
-
-0 [1,0,0] -return_rates(0)
-1 [0,1,0] -return_rates(1)
-2 [0,0,1] -return_rates(2)
-3 [.5,0,0.5] -return_rates(0), return_rates(2)
-4 [.5,.5,0] -return_rates(1), return_rates(0)
-5 [0,.5,.5] - return_rates(1), return_rates(2)
-
-n=3
-i is action
-if choice in range(n)
-    return_rates(i)
-else
-    x = i mod n
-    diff = floor(i/n)
-    return_rates(x)
-    return_rates(x-diff)
-"""
-
-"""
-r0, r1, r2, r3
-[0,0.5,1]
-
-0 [1,0,0,0] - return_rates(0)
-1 [0,1,0,0] - return_rates(1)
-2 [0,0,1,0] - return_rates(2)
-3 [0,0,0,1] - return_rates(3)
-4 [.5,0,0,.5] - return_rates(0), return_rates(3)
-5 [.5,.5,0,0] - return_rates(0), return_rates(1)
-6 [0,.5,.5,0] - return_rates(1), return_rates(2)
-7 [0,0,.5,.5] - return_rates(2), return_rates(3)
-8 [.5,0,.5,0] - return_rates(0), return_rates(2)
-9 [0,.5,0,.5] - return_rates(1), return_rates(3)
-
-n=4
-i is action
-if choice in range(n)
-    return_rates(i)
-else
-    x = i mod n
-    diff = floor(i/n)
-    return_rates(x)
-    return_rates(x-diff)
-
-"""
