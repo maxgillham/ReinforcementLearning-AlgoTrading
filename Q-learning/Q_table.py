@@ -6,19 +6,22 @@ All decisions are made in here.
 import numpy as np
 import pandas as pd
 
+from numba import jit
+
 
 class QLearningTable:
-    def __init__(self, actions, learning_rate=0.01, reward_decay=0.9, e_greedy=0.9):
+    def __init__(self, actions, learning_rate=0.01, reward_decay=0.9, e_greedy=0.05):
         self.actions = actions  # a list
         self.lr = learning_rate
         self.gamma = reward_decay
         self.epsilon = e_greedy
         self.q_table = pd.DataFrame(columns=self.actions, dtype=np.float64)
 
+    @jit
     def choose_action(self, observation):
         self.check_state_exist(observation)
         # action selection
-        if np.random.uniform() < self.epsilon:
+        if np.random.uniform() > self.epsilon:
             # choose best action
             state_action = self.q_table.loc[str(observation), :]
             # some actions may have the same value, randomly choose on in these actions
@@ -28,12 +31,14 @@ class QLearningTable:
             action = np.random.choice(self.actions)
         return action
 
+    @jit
     def learn(self, s, a, r, s_):
         self.check_state_exist(s_)
         q_predict = self.q_table.loc[s, a]
-        q_target = r + (self.gamma*self.q_table.loc[s_, :].max())  
+        q_target = r + (self.gamma*self.q_table.loc[s_, :].max())
         self.q_table.loc[s, a] += round(self.lr * (q_target - q_predict), 3)  # update
 
+    @jit
     def check_state_exist(self, state):
         if str(state) not in self.q_table.index:
             # append new state to q table
