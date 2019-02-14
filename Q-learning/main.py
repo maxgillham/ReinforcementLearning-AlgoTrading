@@ -7,12 +7,15 @@ import matplotlib.pyplot as plt
 from enviorment import TradingEnv
 from gym import spaces
 from Q_table import QLearningTable
-
+from tabulate import tabulate
+from numba import jit
 from utils import *
 
+@jit
 def update(env, Q):
-    try: episodes = int(sys.argv[2])
-    except: episodes = 10
+    # try: episodes = int(sys.argv[2])
+    # except: episodes = 10
+    episodes = 10
     ending_cap = []
     #by default the training is set to be 100 episodes per training
     for episode in range(episodes):
@@ -84,7 +87,7 @@ def real_data():
     #train method
     update(env, Q)
     test_env = TradingEnv(test_data, init_capital=100, is_discrete=False, source='Real')
-    print(Q.q_table)
+    print(tabulate(Q.q_table, tablefmt="markdown", headers="keys"))
     test(test_env, Q)
     return
 
@@ -93,8 +96,6 @@ def iid_data():
     #get train and test data for 5000 days where return rate is i.i.d
     train_data, test_data = split_data(create_iid(5000))
     test_data.index -= (train_data.shape[0] + test_data.shape[0])-100
-    #train_data = pd.read_pickle("data/train_data_iid")
-    #test_data = pd.read_pickle("data/test_data_iid")
     #init trading enviorment
     env = TradingEnv(train_data, init_capital=100, is_discrete = False, source='IID')
     #init q learing table
@@ -103,7 +104,7 @@ def iid_data():
     update(env, Q)
     #print(Q.q_table)
     test_env = TradingEnv(test_data, init_capital=100, is_discrete = False, source='IID')
-    print(Q.q_table)
+    print(tabulate(Q.q_table, tablefmt="markdown", headers="keys"))
     test(test_env, Q)
     return
 
@@ -121,7 +122,7 @@ def markov_data():
     #training method
     update(env, Q)
     test_env = TradingEnv(test_data, init_capital=100, is_discrete=True, source='M')
-    print(Q.q_table)
+    print(tabulate(Q.q_table, tablefmt="markdown", headers="keys"))
     test(test_env, Q)
     return
 
@@ -137,7 +138,7 @@ def markov_data2():
     #training method
     update(env, Q)
     test_env = TradingEnv(test_data, init_capital=100, is_discrete=True, source='M2')
-    print(Q.q_table)
+    print(tabulate(Q.q_table, tablefmt="markdown", headers="keys"))
     test(test_env, Q)
     return
 
@@ -153,7 +154,7 @@ def mix():
     #training method
     update(env, Q)
     test_env = TradingEnv(test_data, init_capital=100, is_discrete=False, source='mix')
-    print(Q.q_table)
+    print(tabulate(Q.q_table, tablefmt="markdown", headers="keys"))
     test(test_env, Q)
     return
 
@@ -167,7 +168,7 @@ def train_markov_real():
     #get real data for testing
     real_train_data, real_test_data = split_data(round_return_rate(get_data()))
     test_env = TradingEnv(real_test_data, init_capital=100, is_discrete=True, source='Real')
-    print(Q.q_table)
+    print(tabulate(Q.q_table, tablefmt="markdown", headers="keys"))
     test(test_env, Q)
     return
 
@@ -189,8 +190,8 @@ if __name__ == '__main__':
 
 
     ## To do
-    # Fix action quantization to be 10 percent intervals
-    # Reduce to two assets for ease of use
+    # done -- Fix action quantization to be 10 percent intervals
+    # done -- Reduce to two assets for ease of use
     # Try training on markov data and testing on real data
     # Try training on real data and testing on real data
     # Try training on markov and testing on ibm, micro and qual seperatly
