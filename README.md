@@ -48,9 +48,11 @@ When the input source is an iid random variable uniformly distributed on [-1,1] 
 
 Which indicates the best option is to invest %0 of capital into the IID stock at any given time.  
 When the input source is an iid random variable uniformly distributed on [0,0.3], the Q table is populated as follows.
+
 | Distribution into Source | 0%      | 10%     | 20%     | 30%     | 40%     | 50%     | 60%     | 70%     | 80%    | 90%     | 100%    |
 |--------------------------|---------|---------|---------|---------|---------|---------|---------|---------|--------|---------|---------|
 | None                     | 1923.39 | 2243.24 | 2064.73 | 2121.45 | 2028.12 | 2122.95 | 2088.61 | 2155.73 | 2096.5 | 2124.11 | 4931.78 |
+
 Which indicates the best option is to invest all capital into the IID stock at any given time. 
 
 ### Markov Memory 1 Source
@@ -58,13 +60,15 @@ Here the input source is markovian with the following transition probabilities.
 <p align="center"> 
     <img src="./img/markov_1_transition.png">
 </p>  
+  
+  
+If the possible return rates for the 3 states are -0.2, 0.0, 0.2 the Q table is populated as follows.
 
-If the possible return rates for the 3 states are -0.2, 0.0, 0.2 the Q table is populated as follows.  
 | Distribution into Source | 0%      | 10%     | 20%     | 30%     | 40%     | 50%     | 60%     | 70%    | 80%     | 90%     | 100%    |
 |--------------------------|---------|---------|---------|---------|---------|---------|---------|--------|---------|---------|---------|
 | Prev Value: 0            | 218.074 | 111.159 | 127.127 | 105.276 | 112.809 | 102.041 | 98.145  | 97.792 | 113.613 | 95.798  | 106.162 |
 | Prev Value: 0.2          | 181.137 | 191.67  | 261.255 | 187.992 | 172.182 | 179.056 | 223.266 | 186.9  | 182.004 | 217.171 | 629.632 |
-| Prev Value: -0.2         | 244.331 | 58.172  | 62.42   | 48.51   | 56.312  | 55.855  | 50.747  | 63.276 | 77.343  | 52.846  | 55.282  |  
+| Prev Value: -0.2         | 244.331 | 58.172  | 62.42   | 48.51   | 56.312  | 55.855  | 50.747  | 63.276 | 77.343  | 52.846  | 55.282  |
 
 This deduces the policy that, when the previous value is:
 * 0 -> Do not invest
