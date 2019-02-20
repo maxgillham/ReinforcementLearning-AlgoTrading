@@ -21,7 +21,7 @@ class TradingEnv(gym.Env):
         self.current_capital = None
         self.is_discrete = is_discrete
         self.partition_ranges = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
-        # investment distribution (0/100), (10/90), (20/80), (30/70)...
+        # investment distribution (0/100), (10/90), (20/80), (30/70)...(100/0)
         self.action_space_size = len(self.partition_ranges)
         self.action_space = spaces.Discrete(self.action_space_size)
         #seed and reset
@@ -35,7 +35,6 @@ class TradingEnv(gym.Env):
     def _reset(self):
         if self.source == 'M2': self.current_step = 2 #if mem 2 we need to to start at 2 for obs space
         else: self.current_step = 1
-        #self.stock_owned = [0]*self.n_stocks
         self.stock_return_rate = self.stock_return_rate_history.loc[self.current_step]
         self.current_capital = self.init_capital
         return self._get_obs()
@@ -53,7 +52,7 @@ class TradingEnv(gym.Env):
             return_rates = self.stock_return_rate_history.loc[self.current_step-1:self.current_step]
             return np.append(return_rates.values[0], return_rates.values[1])
         else:
-            return [0,0,0,0]
+            return [0,0]
 
     def _step(self, action):
         #previous capital is now capital before action

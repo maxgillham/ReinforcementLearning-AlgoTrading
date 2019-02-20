@@ -99,7 +99,8 @@ def iid_data():
     #init trading enviorment
     env = TradingEnv(train_data, init_capital=100, is_discrete = False, source='IID')
     #init q learing table
-    Q = QLearningTable(actions=list(range(env.action_space_size)))
+    Q = QLearningTable(actions=list(range(env.action_space_size)), observations=[[0,0]])
+    Q.setup_table()
     #traing method
     update(env, Q)
     #print(Q.q_table)
@@ -113,12 +114,11 @@ def markov_data():
     #get train and test for 5000 days where return rates are dependent on previous day
     train_data, test_data = split_data(create_markov(5000))
     test_data.index -= (train_data.shape[0] + test_data.shape[0]) - 100
-    #train_data = pd.read_pickle("data/train_data_mc")
-    #test_data = pd.read_pickle("data/test_data_mc")
     #init trading envioourment
     env = TradingEnv(train_data, init_capital=100, is_discrete=True, source='M')
     #init q learning Q_table
-    Q = QLearningTable(actions=list(range(env.action_space_size)))
+    Q = QLearningTable(actions=list(range(env.action_space_size)), observations=train_data.drop_duplicates().values)
+    Q.setup_table()
     #training method
     update(env, Q)
     test_env = TradingEnv(test_data, init_capital=100, is_discrete=True, source='M')

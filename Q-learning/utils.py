@@ -49,12 +49,10 @@ def round_to_base(value, base):
 def create_iid(days):
     #init stock lists
     stock_1 = []
-    stock_2 = []
-    stock_3 = []
     dummy = []
     #randomly choose for each day
     for _ in range(days):
-        stock_1.append(np.random.choice([-0.1,0.1], p=[.5,.5]))
+        stock_1.append(np.random.choice([-1, -.8, -.6, -.4, -.2, 0, 0.2, 0.4, 0.6, 0.8, 1]))
         dummy.append(0.0)
     #make into pandas obj
     data = pd.DataFrame(
@@ -66,10 +64,10 @@ def create_iid(days):
 #create meta data that is markov
 def create_markov(days):
     #stock 1 - markov mem 1 values and transistion matrix
-    stock_1_rates = np.array([-0.05, 0.0, 0.05])
-    stock_1_transition_matrix = np.array([[0.9, 0.05, 0.05],
-                                          [0.05, 0.9, 0.05],
-                                          [0.05, 0.05, 0.9]])
+    stock_1_rates = np.array([-0.2, 0, 0.2])
+    stock_1_transition_matrix = np.array([[0.8, 0.1, 0.1],
+                                          [0.1, 0.8, 0.1],
+                                          [0.1, 0.1, 0.8]])
     #init stock 1 values and dummy value
     stock_1 = []
     dummy = []
@@ -80,7 +78,7 @@ def create_markov(days):
     for _ in range(days):
         stock_1.append(np.random.choice(a=stock_1_rates, p=stock_1_transition_matrix[index_1]))
         index_1 = np.where(stock_1_rates == stock_1[-1])[0][0]
-        dummy.append(0.0)
+        dummy.append(0)
 
     #make into pandas obj
     data = pd.DataFrame(
