@@ -75,4 +75,14 @@ This deduces the policy that, when the previous value is:
 * -0.2 -> Do not invest
 * 0.2 -> Invest %100 of capital into stock  
 
-If the return rates for the 3 possible states are -0.1, 0, 0.4
+If the return rates for the 3 possible states are -0.1, 0, 0.4, the Q table below is produced.  
+| Distribution into Source  | 0%      | 10%     | 20%     | 30%     | 40%     | 50%     | 60%     | 70%     | 80%     | 90%     | 100%    |
+|---------------------------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|
+| Prev Value: -0.1          | 559.623 | 62.7048 | 60.9816 | 68.2782 | 61.0308 | 66.2113 | 58.6067 | 56.0653 | 64.5082 | 60.6457 | 56.6935 |
+| Prev Value: 0             | 69.0304 | 72.4873 | 64.9642 | 58.6928 | 61.7887 | 561.144 | 70.8124 | 69.7554 | 66.7248 | 63.1553 | 64.2676 |
+| Prev Value: 0.4           | 159.824 | 196.479 | 200.312 | 181.142 | 205.622 | 200.464 | 184.247 | 178.793 | 196.372 | 172.393 | 1281.63 |
+
+This deduces the policy that, when the previous value is:
+* 0 -> Invest %50 of capital into stock
+* -0.1 -> Do not invest
+* 0.4 -> Invest %100 of capital into stock  

@@ -23,7 +23,7 @@ def update(env, Q):
         print('\n***Episoide Number*** ===>', episode)
         # initial observation
         observation = env._reset()
-
+        Q.reset_epsilon()
         done = False
         while not done:
             # RL choose action based on observation
@@ -53,10 +53,10 @@ def test(test_env, Q):
     while not done:
 
         #get expected reward for each action at this state
-        state_action = Q.q_table.loc[str(test_env._get_obs()), :]
+
 
         # some actions may have the same expected reward, randomly choose on in these actions
-        action = np.random.choice(state_action[state_action == np.max(state_action)].index)
+        action = action = Q.q_table.loc[str(test_env._get_obs())].idxmax()
 
         observation_, reward, done = test_env._step(action)
 
@@ -158,20 +158,23 @@ def mix():
     test(test_env, Q)
     return
 
-def train_markov_real():
+def train_markov_test_real():
     #get markov to train q table on
     train_data, ignore_test_data = split_data(create_markov(5000))
-    env = TradingEnv(train_data, init_capital=100, is_discrete=True, source='M')
-    Q = QLearningTable(actions=list(range(env.action_space_size)))
+    #custom obs space
+    obs_space = [[-1, 0], [0, 0], [1, 0]]
+    env = TradingEnv(train_data, init_capital=10000, is_discrete=False, source='M')
+    Q = QLearningTable(actions=list(range(env.action_space_size)), observations=obs_space)
+    Q.setup_table()
     #training method
     update(env, Q)
     #get real data for testing
     real_train_data, real_test_data = split_data(round_return_rate(get_data()))
-    test_env = TradingEnv(real_test_data, init_capital=100, is_discrete=True, source='Real')
+    real_train_data.index -= 100
+    test_env = TradingEnv(real_train_data, init_capital=100, is_discrete=False, source='Real')
     print(tabulate(Q.q_table, tablefmt="markdown", headers="keys"))
     test(test_env, Q)
     return
-
 
 if __name__ == '__main__':
     try:
@@ -186,13 +189,14 @@ if __name__ == '__main__':
     elif source_type == 'iid': iid_data()
     elif source_type == 'real': real_data()
     elif source_type == 'mix': mix()
+    elif source_type == 'beta': train_markov_test_real()
     else: print('Invalid arguement.')
 
 
     ## To do
     # done -- Fix action quantization to be 10 percent intervals
     # done -- Reduce to two assets for ease of use
-    # Try training on markov data and testing on real data
+    # done -- Try training on markov data and testing on real data
     # Try training on real data and testing on real data
     # Try training on markov and testing on ibm, micro and qual seperatly
     # Make markov source where you can specify the size of the memory

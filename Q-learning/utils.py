@@ -8,7 +8,7 @@ def get_data():
     ibm = compute_return_rates(sort_by_recent(load_csv('data/daily_IBM.csv')))
     msft = compute_return_rates(sort_by_recent(load_csv('data/daily_MSFT.csv')))
     qcom = compute_return_rates(sort_by_recent(load_csv('data/daily_QCOM.csv')))
-    data = pd.concat([ibm, msft, qcom], axis=1, keys=['ibm', 'msft', 'qcom'])
+    data = pd.concat([ibm, msft, qcom], axis=1, keys=['qcom'])
     data['dummy'] = [0.0]*len(ibm)
     os.chdir('./Q-learning')
     return data
@@ -64,7 +64,7 @@ def create_iid(days):
 #create meta data that is markov
 def create_markov(days):
     #stock 1 - markov mem 1 values and transistion matrix
-    stock_1_rates = np.array([-0.2, 0, 0.2])
+    stock_1_rates = np.array([-0.01, 0, 0.01])
     stock_1_transition_matrix = np.array([[0.8, 0.1, 0.1],
                                           [0.1, 0.8, 0.1],
                                           [0.1, 0.1, 0.8]])

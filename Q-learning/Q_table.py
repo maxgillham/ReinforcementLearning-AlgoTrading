@@ -12,8 +12,8 @@ from numba import jit
 class QLearningTable:
     def __init__(self, actions, observations):
         self.actions = actions  # a list
-        self.lr = 0.01
-        self.gamma = 0.95
+        self.lr = 0.001
+        self.gamma = 0.85
         self.epsilon = 1
         self.epsilon_decay = 0.9999
         self.epsilon_min = 0.01
@@ -31,6 +31,9 @@ class QLearningTable:
             )
         return
 
+    def reset_epsilon(self):
+        self.epsilon = 1
+        return
 
     @jit
     def choose_action(self, observation):
