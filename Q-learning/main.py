@@ -83,7 +83,8 @@ def real_data():
     #init trading env
     env = TradingEnv(train_data, init_capital=100, is_discrete=False, source='Real')
     #init Q table
-    Q = QLearningTable(actions=list(range(env.action_space_size)))
+    Q = QLearningTable(actions=list(range(env.action_space_size)), observations= [[-1, 0], [0, 0], [1, 0]])
+    Q.setup_table()
     #train method
     update(env, Q)
     test_env = TradingEnv(test_data, init_capital=100, is_discrete=False, source='Real')
