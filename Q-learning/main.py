@@ -81,9 +81,10 @@ def real_data():
     #must index at starting at 0
     train_data.index -= 100
     #init trading env
+    obs_space =[[0, 0], [0, 1], [0, -1], [-1, 0], [-1, -1], [-1, 1], [1,-1], [1, 0], [1, 1]]
     env = TradingEnv(train_data, init_capital=100, is_discrete=False, source='Real')
     #init Q table
-    Q = QLearningTable(actions=list(range(env.action_space_size)), observations= [[-1, 0], [0, 0], [1, 0]])
+    Q = QLearningTable(actions=list(range(env.action_space_size)), observations=obs_space)
     Q.setup_table()
     #train method
     update(env, Q)

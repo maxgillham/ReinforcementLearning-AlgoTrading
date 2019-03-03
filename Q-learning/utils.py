@@ -8,8 +8,8 @@ def get_data():
     ibm = compute_return_rates(sort_by_recent(load_csv('data/daily_IBM.csv')))
     msft = compute_return_rates(sort_by_recent(load_csv('data/daily_MSFT.csv')))
     qcom = compute_return_rates(sort_by_recent(load_csv('data/daily_QCOM.csv')))
-    data = pd.concat([ibm, msft, qcom], axis=1, keys=['qcom'])
-    data['dummy'] = [0.0]*len(ibm)
+    data = pd.concat([ibm, msft], axis=1, keys=['ibm', 'msft'])
+    #data['dummy'] = [0.0]*len(ibm)
     os.chdir('./Q-learning')
     return data
 
