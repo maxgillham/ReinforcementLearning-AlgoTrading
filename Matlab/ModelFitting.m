@@ -51,7 +51,7 @@ binCount = zeros(nStocks,nStates,nStates);
 
 lowerBound = -1;
 upperBound = 1;
-bounds = [-1, -0.1, 0.1,1];
+bounds = [-1, -0.001, 0.001,1];
 
 P_IBM = zeros(nStates,nStates); 
 P_MSFT = zeros(nStates,nStates);

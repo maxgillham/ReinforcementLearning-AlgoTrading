@@ -4,13 +4,11 @@ import os
 
 #main method to get the return rates for the three given stocks over time
 def get_data():
-    os.chdir('..')
-    ibm = compute_return_rates(sort_by_recent(load_csv('data/daily_IBM.csv')))
-    msft = compute_return_rates(sort_by_recent(load_csv('data/daily_MSFT.csv')))
-    qcom = compute_return_rates(sort_by_recent(load_csv('data/daily_QCOM.csv')))
-    data = pd.concat([ibm, msft], axis=1, keys=['ibm', 'msft'])
-    #data['dummy'] = [0.0]*len(ibm)
-    os.chdir('./Q-learning')
+    ibm = compute_return_rates(sort_by_recent(load_csv('../data/daily_IBM.csv')))
+    msft = compute_return_rates(sort_by_recent(load_csv('../data/daily_MSFT.csv')))
+    qcom = compute_return_rates(sort_by_recent(load_csv('../data/daily_QCOM.csv')))
+    data = pd.concat([ibm], axis=1, keys=['ibm'])
+    data['dummy'] = [0.0]*len(ibm)
     return data
 
 
@@ -26,8 +24,8 @@ def sort_by_recent(df):
 
 #divide data into training and testing data
 def split_data(df):
-    train_data = df.iloc[0:df.shape[0]-100]
-    test_data = df.iloc[df.shape[0]-100:]
+    train_data = df.iloc[0:df.shape[0]-1000]
+    test_data = df.iloc[df.shape[0]-1000:]
     return train_data, test_data
 
 #convert to rate of return
@@ -65,9 +63,9 @@ def create_iid(days):
 def create_markov(days):
     #stock 1 - markov mem 1 values and transistion matrix
     stock_1_rates = np.array([-0.01, 0, 0.01])
-    stock_1_transition_matrix = np.array([[0.8, 0.1, 0.1],
-                                          [0.1, 0.8, 0.1],
-                                          [0.1, 0.1, 0.8]])
+    stock_1_transition_matrix = np.array([[0.4379, 0.0744, 0.4877],
+                                          [0.4158, 0.0860, 0.4982],
+                                          [0.4366, 0.0822, 0.4812]])
     #init stock 1 values and dummy value
     stock_1 = []
     dummy = []

@@ -165,15 +165,15 @@ def train_markov_test_real():
     train_data, ignore_test_data = split_data(create_markov(5000))
     #custom obs space
     obs_space = [[-1, 0], [0, 0], [1, 0]]
-    env = TradingEnv(train_data, init_capital=10000, is_discrete=False, source='M')
+    env = TradingEnv(train_data, init_capital=100, is_discrete=False, source='M')
     Q = QLearningTable(actions=list(range(env.action_space_size)), observations=obs_space)
     Q.setup_table()
     #training method
     update(env, Q)
     #get real data for testing
     real_train_data, real_test_data = split_data(round_return_rate(get_data()))
-    real_train_data.index -= 100
-    test_env = TradingEnv(real_train_data, init_capital=100, is_discrete=False, source='Real')
+    real_train_data.index -= 1000
+    test_env = TradingEnv(real_test_data, init_capital=100, is_discrete=False, source='Real')
     print(tabulate(Q.q_table, tablefmt="markdown", headers="keys"))
     test(test_env, Q)
     return
@@ -193,12 +193,3 @@ if __name__ == '__main__':
     elif source_type == 'mix': mix()
     elif source_type == 'beta': train_markov_test_real()
     else: print('Invalid arguement.')
-
-
-    ## To do
-    # done -- Fix action quantization to be 10 percent intervals
-    # done -- Reduce to two assets for ease of use
-    # done -- Try training on markov data and testing on real data
-    # Try training on real data and testing on real data
-    # Try training on markov and testing on ibm, micro and qual seperatly
-    # Make markov source where you can specify the size of the memory

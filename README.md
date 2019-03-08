@@ -27,7 +27,7 @@ We are currently working on optimizing the distribution of funds between two ass
 * `real` 
   * Real data 
  
-This will populate the contents of a Q table using an epsilon greedy stratedgy and plot the result of following the policy obtained from Q Learning on a new trading enviorment over 100 intervals of testing data.  An overview of the code architechure is found below.  
+This will populate the contents of a Q table and display the result of following the policy obtained over 100 intervals of testing data.  An overview of the code architechure is found below.  
 * `main.py`
   * This is where you can specify episodes and initial investment
 * `enviorment.py`
@@ -86,3 +86,13 @@ This deduces the policy that, when the previous value is:
 * 0 -> Invest %50 of capital into stock
 * -0.1 -> Do not invest
 * 0.4 -> Invest %100 of capital into stock  
+This results are consistend with the optimal investement decision derived in the `./Matlab/` scripts, which yields that the Q-learning is working effectivly.  
+
+Using the script `./Matlab/ModelFitting.m` the one step transition matrix for IBM computed over the IBM return rates, discluding the last 1000 samples for testing.    
+<p align="center"> 
+    <img src="./img/P_IBM_GQ.png">
+</p>  
+For states x < -.1%, -.1% < x < .1% and x > .1%.  
+Training the Q-learning table on artificial data generated with respect to this source and testing on untouched real data yeilds the following result.
+
+![ibm_GQ_test](./img/IBM_Test_GQ.png)
