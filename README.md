@@ -36,6 +36,8 @@ This will populate the contents of a Q table and display the result of following
   * This class defines learning rate, gamma, epsilon parameters and contains choice action and learning methods
 * `utils.py`
   * A series of methods used to import, generate and manipulate data for training
+* `/Matalb/.`
+  * A series of matlab scripts used for verifying policies, quantizing data and approximating source distributions
 
 ## Q Learning Results
 Below are some observations thus far. Each example is derived with an initial investment of $100 for 10 episodes.
@@ -75,7 +77,8 @@ This deduces the policy that, when the previous value is:
 * -0.2 -> Do not invest
 * 0.2 -> Invest %100 of capital into stock  
 
-If the return rates for the 3 possible states are -0.1, 0, 0.4, the Q table below is produced.  
+If the return rates for the 3 possible states are -0.1, 0, 0.4, the Q table below is produced.
+
 | Distribution into Source  | 0%      | 10%     | 20%     | 30%     | 40%     | 50%     | 60%     | 70%     | 80%     | 90%     | 100%    |
 |---------------------------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|
 | Prev Value: -0.1          | 559.623 | 62.7048 | 60.9816 | 68.2782 | 61.0308 | 66.2113 | 58.6067 | 56.0653 | 64.5082 | 60.6457 | 56.6935 |
@@ -88,14 +91,16 @@ This deduces the policy that, when the previous value is:
 * 0.4 -> Invest %100 of capital into stock  
 This results are consistend with the optimal investement decision derived in the `./Matlab/` scripts, which yields that the Q-learning is working effectivly.  
 
-Using the script `./Matlab/ModelFitting.m` the one step transition matrix for IBM computed over the IBM return rates, (discluding the last 1000 samples for testing).    
+Using the script `/Matlab/ModelFitting.m` the one step transition matrix for IBM computed over the IBM return rates, (discluding the last 1000 samples for testing).    
 <p align="center"> 
     <img src="./img/P_IBM_GQ.png">
 </p>  
 For states x < -.1%, -.1% < x < .1% and x > .1%.  
 We can then enter this transition matrix and states in `utils.py` to generating 5000 samples, and then train the Q learning agent on these samples.  Applying the policy obtained from Q-learning, we can then apply it to the testing data for IBM (the last 1000 values).  
 
-![ibm_GQ_test](./img/IBM_Test_GQ.png)  
+<p align="center"> 
+    <img src="./img/IBM_Test_GQ.png">
+</p>  
 
 However, this quantization is generic and randomly chosen.  Consider now repeating the experiment, however, we can determine the quantization of our training data using the Lloyd Max algorithm on the real data training set.  
 
@@ -109,4 +114,7 @@ Applying this quantiation to `./Matlab/ModelFitting.m` we generate the following
 </p>  
 
 Training a Q agent on the dataset generated according to this empirical distribution and applying the policy obtained to the testing data yeilds the following result.  
-![idf_](./img/IBM_Test_Lloyd_Q.png)
+
+<p align="center"> 
+    <img src="./img/IBM_Test_Lloyd_Q.png">
+</p>  
