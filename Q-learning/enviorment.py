@@ -44,8 +44,8 @@ class TradingEnv(gym.Env):
             return_rate_list_temp = list(self.stock_return_rate)
             if not self.is_discrete:
                 for i in range(len(return_rate_list_temp)):
-                    if return_rate_list_temp[i] < -0.001: return_rate_list_temp[i] = -1
-                    elif return_rate_list_temp[i] > 0.001: return_rate_list_temp[i] = 1
+                    if return_rate_list_temp[i] < -0.0082: return_rate_list_temp[i] = -1
+                    elif return_rate_list_temp[i] > 0.0120: return_rate_list_temp[i] = 1
                     else: return_rate_list_temp[i] = 0
             return return_rate_list_temp
         elif self.source =='M2':

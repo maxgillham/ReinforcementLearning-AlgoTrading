@@ -165,7 +165,7 @@ def train_markov_test_real():
     train_data, ignore_test_data = split_data(create_markov(5000))
     #custom obs space
     obs_space = [[-1, 0], [0, 0], [1, 0]]
-    env = TradingEnv(train_data, init_capital=100, is_discrete=False, source='M')
+    env = TradingEnv(train_data, init_capital=100000, is_discrete=False, source='M')
     Q = QLearningTable(actions=list(range(env.action_space_size)), observations=obs_space)
     Q.setup_table()
     #training method

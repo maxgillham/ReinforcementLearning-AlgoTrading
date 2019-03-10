@@ -88,11 +88,25 @@ This deduces the policy that, when the previous value is:
 * 0.4 -> Invest %100 of capital into stock  
 This results are consistend with the optimal investement decision derived in the `./Matlab/` scripts, which yields that the Q-learning is working effectivly.  
 
-Using the script `./Matlab/ModelFitting.m` the one step transition matrix for IBM computed over the IBM return rates, discluding the last 1000 samples for testing.    
+Using the script `./Matlab/ModelFitting.m` the one step transition matrix for IBM computed over the IBM return rates, (discluding the last 1000 samples for testing).    
 <p align="center"> 
     <img src="./img/P_IBM_GQ.png">
 </p>  
 For states x < -.1%, -.1% < x < .1% and x > .1%.  
-Training the Q-learning table on artificial data generated with respect to this source and testing on untouched real data yeilds the following result.
+We can then enter this transition matrix and states in `utils.py` to generating 5000 samples, and then train the Q learning agent on these samples.  Applying the policy obtained from Q-learning, we can then apply it to the testing data for IBM (the last 1000 values).  
 
-![ibm_GQ_test](./img/IBM_Test_GQ.png)
+![ibm_GQ_test](./img/IBM_Test_GQ.png)  
+
+However, this quantization is generic and randomly chosen.  Consider now repeating the experiment, however, we can determine the quantization of our training data using the Lloyd Max algorithm on the real data training set.  
+
+<p align="center"> 
+    <img src="./img/IBM_lloyd_max.png">
+</p>  
+Applying this quantiation to `./Matlab/ModelFitting.m` we generate the following transition matrix.  
+
+<p align="center"> 
+    <img src="./img/P_IBM_LQ.png">
+</p>  
+
+Training a Q agent on the dataset generated according to this empirical distribution and applying the policy obtained to the testing data yeilds the following result.  
+![idf_](./img/IBM_Test_Lloyd_Q.png)
