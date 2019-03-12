@@ -7,7 +7,7 @@ def get_data():
     ibm = compute_return_rates(sort_by_recent(load_csv('../data/daily_IBM.csv')))
     msft = compute_return_rates(sort_by_recent(load_csv('../data/daily_MSFT.csv')))
     qcom = compute_return_rates(sort_by_recent(load_csv('../data/daily_QCOM.csv')))
-    data = pd.concat([ibm], axis=1, keys=['ibm'])
+    data = pd.concat([msft], axis=1, keys=['msft'])
     data['dummy'] = [0.0]*len(ibm)
     return data
 
@@ -62,10 +62,10 @@ def create_iid(days):
 #create meta data that is markov
 def create_markov(days):
     #stock 1 - markov mem 1 values and transistion matrix
-    stock_1_rates = np.array([-0.01, 0, 0.01])
-    stock_1_transition_matrix = np.array([[0.4379, 0.0744, 0.4877],
-                                          [0.4158, 0.0860, 0.4982],
-                                          [0.4366, 0.0822, 0.4812]])
+    stock_1_rates = np.array([-0.0222, 0.0003, 0.0248])
+    stock_1_transition_matrix = np.array([[0.2511, 0.5038, 0.2451],
+                                          [0.1587, 0.7099, 0.1314],
+                                          [0.2410, 0.5559, 0.2031]])
     #init stock 1 values and dummy value
     stock_1 = []
     dummy = []

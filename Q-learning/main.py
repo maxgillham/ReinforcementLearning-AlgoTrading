@@ -79,9 +79,9 @@ def real_data():
     print('For Real Data')
     train_data, test_data = split_data(round_return_rate(get_data()))
     #must index at starting at 0
-    train_data.index -= 100
+    train_data.index -= 1000
     #init trading env
-    obs_space =[[0, 0], [0, 1], [0, -1], [-1, 0], [-1, -1], [-1, 1], [1,-1], [1, 0], [1, 1]]
+    obs_space = [[-1, 0], [0, 0], [1, 0]]
     env = TradingEnv(train_data, init_capital=100, is_discrete=False, source='Real')
     #init Q table
     Q = QLearningTable(actions=list(range(env.action_space_size)), observations=obs_space)
@@ -165,7 +165,11 @@ def train_markov_test_real():
     train_data, ignore_test_data = split_data(create_markov(5000))
     #custom obs space
     obs_space = [[-1, 0], [0, 0], [1, 0]]
+    #custom quantization_ranges
+    quantization_ranges = [-0.0109, 0.0126]
     env = TradingEnv(train_data, init_capital=100000, is_discrete=False, source='M')
+    # set quantization ranges to lloyd max partition
+    env.specify_quantization_ranges(quantization_ranges)
     Q = QLearningTable(actions=list(range(env.action_space_size)), observations=obs_space)
     Q.setup_table()
     #training method
@@ -174,6 +178,7 @@ def train_markov_test_real():
     real_train_data, real_test_data = split_data(round_return_rate(get_data()))
     real_train_data.index -= 1000
     test_env = TradingEnv(real_test_data, init_capital=100, is_discrete=False, source='Real')
+    test_env.specify_quantization_ranges(quantization_ranges)
     print(tabulate(Q.q_table, tablefmt="markdown", headers="keys"))
     test(test_env, Q)
     return
@@ -193,3 +198,7 @@ if __name__ == '__main__':
     elif source_type == 'mix': mix()
     elif source_type == 'beta': train_markov_test_real()
     else: print('Invalid arguement.')
+
+    # To Do:
+    # Find maximizing path over testing data to benchmark policies obtained
+    # Train on empirical one step and test with real data for MCSFT and QCOM

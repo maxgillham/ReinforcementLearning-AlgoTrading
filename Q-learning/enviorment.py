@@ -20,6 +20,7 @@ class TradingEnv(gym.Env):
         self.stock_return_rate = None
         self.current_capital = None
         self.is_discrete = is_discrete
+        self.quantization_ranges = [-0.01, 0.01]
         self.partition_ranges = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
         # investment distribution (0/100), (10/90), (20/80), (30/70)...(100/0)
         self.action_space_size = len(self.partition_ranges)
@@ -44,8 +45,8 @@ class TradingEnv(gym.Env):
             return_rate_list_temp = list(self.stock_return_rate)
             if not self.is_discrete:
                 for i in range(len(return_rate_list_temp)):
-                    if return_rate_list_temp[i] < -0.0082: return_rate_list_temp[i] = -1
-                    elif return_rate_list_temp[i] > 0.0120: return_rate_list_temp[i] = 1
+                    if return_rate_list_temp[i] < self.quantization_ranges[0]: return_rate_list_temp[i] = -1
+                    elif return_rate_list_temp[i] > self.quantization_ranges[1]: return_rate_list_temp[i] = 1
                     else: return_rate_list_temp[i] = 0
             return return_rate_list_temp
         elif self.source =='M2':
@@ -79,3 +80,8 @@ class TradingEnv(gym.Env):
         elif new_val == prev_capital: reward = 0
         else: reward = -math.log(abs(new_val - prev_capital),2)
         return new_val, reward
+
+    #Only neseisarry for non_discrete data - defaulted to -0.01, 0.0, 0.01
+    def specify_quantization_ranges(self, ranges):
+        self.quantization_ranges = ranges
+        return

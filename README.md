@@ -36,8 +36,6 @@ This will populate the contents of a Q table and display the result of following
   * This class defines learning rate, gamma, epsilon parameters and contains choice action and learning methods
 * `utils.py`
   * A series of methods used to import, generate and manipulate data for training
-* `/Matalb/.`
-  * A series of matlab scripts used for verifying policies, quantizing data and approximating source distributions
 
 ## Q Learning Results
 Below are some observations thus far. Each example is derived with an initial investment of $100 for 10 episodes.
