@@ -15,7 +15,7 @@ pip install -r requirements-cpu.txt
 ```  
 The equivalent requirements for gpu support are inside `requirements-gpu.txt`.  
 ## Training
-We are currently working on optimizing the distribution of funds between two assets. You run `python main.py [souce type]`, where the source type(s) are as follows:  
+We are currently working on optimizing the distribution of funds between two assets. You run `python main.py [source type]`, where the source type(s) are as follows:  
 * `markov`
   * Markov memory 1 and a fixed asset with return rate 0
 * `markov2`
@@ -75,8 +75,7 @@ This deduces the policy that, when the previous value is:
 * -0.2 -> Do not invest
 * 0.2 -> Invest %100 of capital into stock  
 
-If the return rates for the 3 possible states are -0.1, 0, 0.4, the Q table below is produced.
-
+If the return rates for the 3 possible states are -0.1, 0, 0.4, the Q table below is produced.  
 | Distribution into Source  | 0%      | 10%     | 20%     | 30%     | 40%     | 50%     | 60%     | 70%     | 80%     | 90%     | 100%    |
 |---------------------------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|
 | Prev Value: -0.1          | 559.623 | 62.7048 | 60.9816 | 68.2782 | 61.0308 | 66.2113 | 58.6067 | 56.0653 | 64.5082 | 60.6457 | 56.6935 |
@@ -89,16 +88,14 @@ This deduces the policy that, when the previous value is:
 * 0.4 -> Invest %100 of capital into stock  
 This results are consistend with the optimal investement decision derived in the `./Matlab/` scripts, which yields that the Q-learning is working effectivly.  
 
-Using the script `/Matlab/ModelFitting.m` the one step transition matrix for IBM computed over the IBM return rates, (discluding the last 1000 samples for testing).    
+Using the script `./Matlab/ModelFitting.m` the one step transition matrix for IBM computed over the IBM return rates, (discluding the last 1000 samples for testing).    
 <p align="center"> 
     <img src="./img/P_IBM_GQ.png">
 </p>  
 For states x < -.1%, -.1% < x < .1% and x > .1%.  
 We can then enter this transition matrix and states in `utils.py` to generating 5000 samples, and then train the Q learning agent on these samples.  Applying the policy obtained from Q-learning, we can then apply it to the testing data for IBM (the last 1000 values).  
 
-<p align="center"> 
-    <img src="./img/IBM_Test_GQ.png">
-</p>  
+![ibm_GQ_test](./img/IBM_Test_GQ.png)  
 
 However, this quantization is generic and randomly chosen.  Consider now repeating the experiment, however, we can determine the quantization of our training data using the Lloyd Max algorithm on the real data training set.  
 
@@ -112,7 +109,16 @@ Applying this quantiation to `./Matlab/ModelFitting.m` we generate the following
 </p>  
 
 Training a Q agent on the dataset generated according to this empirical distribution and applying the policy obtained to the testing data yeilds the following result.  
+![idf_](./img/IBM_Test_Lloyd_Q.png)  
+Repeating this experiment with the Microsoft data, we first obtain a Llloyd Max quantizatizer as shown below.  
+<p align="center"> 
+    <img src="./img/MSFT_lloyd_max.png">
+</p>  
+Afterwards we can obtain an empiratical approximation of the 1 step transition matrix according to this quantizer, with respect to the MSFT data discluding the most recent 1000 entries.  
 
 <p align="center"> 
-    <img src="./img/IBM_Test_Lloyd_Q.png">
+    <img src="./img/P_MSFT_LQ.png">
 </p>  
+Using this quantizer and transition matrix to generate training data for the Q agent, the policies obtained have the following result on our testing data.  
+
+![if_](./img/MSFT_Test_Lloyd_Q.png)  
