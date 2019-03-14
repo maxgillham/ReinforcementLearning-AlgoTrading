@@ -138,3 +138,22 @@ def create_markov_iid_mix(days):
          'IID': stock_2
         })
     return data
+
+# Returns optimal codebook and partition given a numpy array of scalar values
+def quantize(data):
+    code_points = np.array([-.01, 0, 0.01])
+    #while distortion_rate > 0.001:
+    #distance_1 = np.log(abs(data - code_points[0]))
+    #distance_2 = np.log(abs(data - code_points[0]))
+    distance_1 = data - code_points[0]
+    distance_2 = data - code_points[1]
+    distance_3 = data - code_points[2]
+    distances = np.concatenate(([distance_1], [distance_2], [distance_3]), axis=0)
+    indexs = np.argmin(distances, axis=0)
+
+    print(distances)
+    return
+
+if __name__ == "__main__":
+    real_train_data, real_test_data = split_data(round_return_rate(get_data()))
+    quantize(real_test_data['msft'].values)

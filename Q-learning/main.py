@@ -11,10 +11,9 @@ from tabulate import tabulate
 from numba import jit
 from utils import *
 
-@jit
 def update(env, Q):
-    # try: episodes = int(sys.argv[2])
-    # except: episodes = 10
+    try: episodes = int(sys.argv[2])
+    except: episodes = 10
     episodes = 10
     ending_cap = []
     #by default the training is set to be 100 episodes per training
@@ -52,18 +51,15 @@ def test(test_env, Q):
     done = False
     while not done:
 
-        #get expected reward for each action at this state
-
-
-        # some actions may have the same expected reward, randomly choose on in these actions
+        # Get action with maximum future expected reward
         action = action = Q.q_table.loc[str(test_env._get_obs())].idxmax()
-
+        # Apply action
         observation_, reward, done = test_env._step(action)
-
+        # Save current cash to observe over testing period
         test_cap.append(test_env.current_capital)
-
+        # Current obs becomes next obs
         observation = observation_
-
+        # If completed time frame
         if done:
             break
 
