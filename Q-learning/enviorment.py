@@ -4,8 +4,6 @@ import os
 import numpy as np
 
 from gym import spaces
-from gym.utils import seeding
-from scipy import misc
 from utils import *
 
 class TradingEnv(gym.Env):
@@ -25,13 +23,7 @@ class TradingEnv(gym.Env):
         # investment distribution (0/100), (10/90), (20/80), (30/70)...(100/0)
         self.action_space_size = len(self.partition_ranges)
         self.action_space = spaces.Discrete(self.action_space_size)
-        #seed and reset
-        self._seed()
         self._reset()
-
-    def _seed(self, seed=None):
-        self.np_random, seed = seeding.np_random(seed)
-        return[seed]
 
     def _reset(self):
         if self.source == 'M2': self.current_step = 2 #if mem 2 we need to to start at 2 for obs space

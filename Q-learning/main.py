@@ -5,10 +5,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from enviorment import TradingEnv
-from gym import spaces
 from Q_table import QLearningTable
 from tabulate import tabulate
-from numba import jit
 from utils import *
 
 def update(env, Q):
@@ -157,24 +155,29 @@ def mix():
     return
 
 def train_markov_test_real():
-    #get markov to train q table on
-    train_data, ignore_test_data = split_data(create_markov(5000))
-    #custom obs space
-    obs_space = [[-1, 0], [0, 0], [1, 0]]
-    #custom quantization_ranges
-    quantization_ranges = [-0.0109, 0.0126]
-    env = TradingEnv(train_data, init_capital=100000, is_discrete=False, source='M')
-    # set quantization ranges to lloyd max partition
-    env.specify_quantization_ranges(quantization_ranges)
-    Q = QLearningTable(actions=list(range(env.action_space_size)), observations=obs_space)
-    Q.setup_table()
-    #training method
-    update(env, Q)
-    #get real data for testing
+    # Load real data and split into training and testing
     real_train_data, real_test_data = split_data(round_return_rate(get_data()))
     real_train_data.index -= 1000
+    # Get codebook and bounds for a 3-level uniform quantizer
+    codebook, bounds = quantize(real_train_data['msft'].values)
+    # Compute an empirical transition matrix over training data with bounds
+    # From 3 level uniform quantizer
+    P = empirical_transition_matrix(real_train_data['msft'].values, bounds)
+    # Generate markov data according to this transition matrix and codebook values
+    train_data, test_data = split_data(create_custom_markov_samples(5000, codebook, P))
+    # Define observation space
+    obs_space = [[-1, 0], [0, 0], [1, 0]]
+    # Enviorment for markov samples
+    env = TradingEnv(train_data, init_capital=100000, is_discrete=False, source='M')
+    # Set quantization ranges for bounds from 3 level uniform quantizer
+    env.specify_quantization_ranges(bounds)
+    Q = QLearningTable(actions=list(range(env.action_space_size)), observations=obs_space)
+    Q.setup_table()
+    # Train Q learning agent
+    update(env, Q)
+    # Create new trading enviorment for testing policy on real data
     test_env = TradingEnv(real_test_data, init_capital=100, is_discrete=False, source='Real')
-    test_env.specify_quantization_ranges(quantization_ranges)
+    test_env.specify_quantization_ranges(bounds)
     print(tabulate(Q.q_table, tablefmt="markdown", headers="keys"))
     test(test_env, Q)
     return
@@ -194,7 +197,3 @@ if __name__ == '__main__':
     elif source_type == 'mix': mix()
     elif source_type == 'beta': train_markov_test_real()
     else: print('Invalid arguement.')
-
-    # To Do:
-    # Find maximizing path over testing data to benchmark policies obtained
-    # Train on empirical one step and test with real data for MCSFT and QCOM

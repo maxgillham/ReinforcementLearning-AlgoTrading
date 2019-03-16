@@ -6,9 +6,6 @@ All decisions are made in here.
 import numpy as np
 import pandas as pd
 
-from numba import jit
-
-
 class QLearningTable:
     def __init__(self, actions, observations):
         self.actions = actions  # a list
@@ -35,7 +32,6 @@ class QLearningTable:
         self.epsilon = 1
         return
 
-    @jit
     def choose_action(self, observation):
         #self.check_state_exist(observation)
         # choose "current best" action
@@ -46,14 +42,12 @@ class QLearningTable:
         if self.epsilon > self.epsilon_min: self.epsilon *= self.epsilon_decay
         return action
 
-    @jit
     def learn(self, s, a, r, s_):
         #self.check_state_exist(s_)
         q_predict = self.q_table.loc[s, a]
         q_target = r + (self.gamma*self.q_table.loc[s_].max())
         self.q_table.loc[s, a] += self.lr * (q_target - q_predict)  # update
 
-    @jit
     def check_state_exist(self, state):
         if str(state) not in self.q_table.index:
             # append new state to q table
