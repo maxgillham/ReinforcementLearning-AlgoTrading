@@ -137,7 +137,8 @@ Using this quantizer and transition matrix to generate training data for the Q a
 To better understand what markov order (if any) best represents the conditional dependence of past return rates we experiment with manipulating the obsersvations seen by the Q learning agent. To start, we consider the microsoft data. Below is the populated Q table if this stock is treated as iid. Here, the agent has no access to previous return rates so the observation is always the same.  
 | Distribution into Source | 0%    | 10%    | 20%   | 30%    | 40%    | 50%    | 60%   | 70%   | 80%    | 90%    | 100%   |
 |--------------------------|-------|--------|-------|--------|--------|--------|-------|-------|--------|--------|--------|
-| None                     | 11.9622 | 11.867 | 12.0141 | 11.9526 | 12.0298| 11.8362 |11.9475 |11.9462| 11.9242 |14.7758 | 12.0298 | 
+| None                     | 11.9622 | 11.867 | 12.0141 | 11.9526 | 12.0298| 11.8362 |11.9475 |11.9462| 11.9242 |14.7758 | 12.0298 |  
+
 This policy implies investing %90 of assets into the stock for any given time step. Applying such policy over the testing data yeilds.  
 <p align="center"> 
     <img src="./img/MSFT_IID.png">
@@ -149,6 +150,7 @@ Now, if we allow the Q learning agent to observe the previous return rate as `-1
 | Prev -1                  | 2.50939 | 2.49115 | 2.54789 | 2.67343 | 6.03022 | 2.49485 | 2.61984 | 2.62763 | 2.61406 | 2.49907 | 2.50897 |
 | Prev 0                   | 6.48083 | 6.43567 | 6.46101 | 6.47844 | 6.46612 | 6.40038 | 6.45748 | 8.77078 | 6.476   | 6.59192 | 6.54441 |
 | Prev 1                   | 2.54348 | 5.79577 | 2.5581  | 2.57426 | 2.2602  | 2.59166 | 2.57566 | 2.48651 | 2.47911 | 2.55642 | 2.29637 |  
+
 This markov policy yeilds the following performance over the testing data.  
 
 <p align="center"> 
