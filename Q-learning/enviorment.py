@@ -42,7 +42,12 @@ class TradingEnv(gym.Env):
                     else: return_rate_list_temp[i] = 0
             return return_rate_list_temp
         elif self.source =='M2':
-            return_rates = self.stock_return_rate_history.loc[self.current_step-1:self.current_step]
+            return_rates = self.stock_return_rate_history.loc[0:2]
+            # obs = np.append(return_rates.values[0], return_rates.values[1])
+            # for i in range(2):
+            #     if obs[i, 0] < self.quantization_ranges[0]: obs[i,0] = -1
+            #     elif obs[i, 0] < self.quantization_ranges[1]: obs[i, 0] = 1
+            #     else: obs[i, 0] = 0
             return np.append(return_rates.values[0], return_rates.values[1])
         else:
             return [0,0]
@@ -55,7 +60,7 @@ class TradingEnv(gym.Env):
         #return rate is return rate for that day
         self.stock_return_rate = self.stock_return_rate_history.loc[self.current_step]
         new_val, reward = self._invest(prev_capital, action)
-        self.current_capital = round(new_val)
+        self.current_capital = new_val
         if self.current_step == self.n_steps - 1:
             done_flag = True
         else:
@@ -67,10 +72,8 @@ class TradingEnv(gym.Env):
         cash_for_stock_1 = self.partition_ranges[action]*prev_capital
         cash_for_stock_2 = (1-self.partition_ranges[action])*prev_capital
         new_val = ((self.stock_return_rate[0]+1)*cash_for_stock_1) + ((self.stock_return_rate[1]+1)*cash_for_stock_2)
-        #reward function for new value
-        if new_val > prev_capital: reward = math.log((new_val-prev_capital),2)
-        elif new_val == prev_capital: reward = 0
-        else: reward = -math.log(abs(new_val - prev_capital),2)
+        # reward function for new value
+        reward = math.log(new_val, 10)
         return new_val, reward
 
     #Only neseisarry for non_discrete data - defaulted to -0.01, 0.0, 0.01
