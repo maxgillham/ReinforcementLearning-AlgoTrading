@@ -135,6 +135,7 @@ Using this quantizer and transition matrix to generate training data for the Q a
 
 ### Comparing Q Learning Results for Markov Orders
 To better understand what markov order (if any) best represents the conditional dependence of past return rates we experiment with manipulating the obsersvations seen by the Q learning agent. To start, we consider the microsoft data. Below is the populated Q table if this stock is treated as iid. Here, the agent has no access to previous return rates so the observation is always the same.  
+
 | Distribution into Source | 0%      | 10%     | 20%     | 30%     | 40%     | 50%     | 60%     | 70%     | 80%     | 90%    | 100%    |
 |--------------------------|---------|---------|---------|---------|---------|---------|---------|---------|---------|--------|---------|
 | None                     | 39.2431 | 39.5498 | 39.2918 | 40.3238 | 39.5636 | 48.7792 | 39.8656 | 39.8663 | 39.4475 | 39.746 | 39.4284 |  
@@ -144,7 +145,7 @@ This policy implies investing %90 of assets into the stock for any given time st
 <p align="center"> 
     <img src="./img/MSFT_IID.png">
 </p>  
-Now, if we allow the Q learning agent to observe the previous return rate as `-1, 0, 1` correspoding to being in the negative interval, nuetral interval and positive interval as per the uniform quantization over the training data, we observe the following markov order 1 policy from the Q learning agent.
+Now, if we allow the Q learning agent to observe the previous return rate as `-1, 0, 1` correspoding to being in the negative interval, nuetral interval and positive interval as per the uniform quantization over the training data, we observe the following markov order 1 policy from the Q learning agent.  
 
 | Distribution into Source | 0%      | 10%     | 20%     | 30%     | 40%     | 50%     | 60%     | 70%     | 80%     | 90%     | 100%    |
 |--------------------------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|
@@ -171,6 +172,7 @@ Allowing the Q agent to look at the previous two return rates yeilds the followi
 | Prev Seq: "Positive", "Down"     | 4.64262 | 1.45491 | 1.49116 | 1.44225 | 1.37647 | 1.39101 | 1.6392  | 1.17189 | 1.3111   | 1.53721 | 1.38324 |
 | Prev Seq: "Positive", "Nuetral"  | 3.74981 | 4.25076 | 4.28741 | 9.85611 | 4.12424 | 4.65483 | 4.37102 | 4.29442 | 3.81727  | 4.28817 | 3.76588 |
 | Prev Seq: "Positive", "Positive" | 1.22974 | 1.00224 | 1.16756 | 1.04358 | 1.34929 | 1.13015 | 1.25551 | 3.65231 | 0.896386 | 1.18419 | 1.17435 |  
+
 Applying this markov 2 policy to the testing set yeilds 
 
 <p align="center"> 
@@ -194,6 +196,7 @@ Moving to markov memory 1, we obtain the following Q table.
 | Prev "Down"              | 10.2676 | 10.2352 | 11.1674 | 10.8175 | 10.6088 | 11.0861 | 10.3039 | 22.9233 | 9.90889 | 10.1815 | 9.52493 |
 | Prev "Nuetral"           | 23.2557 | 23.2025 | 23.4107 | 23.7157 | 23.1266 | 23.4601 | 31.6622 | 24.0064 | 22.8477 | 23.2966 | 23.6219 |
 | Prev "Positive"          | 7.81495 | 7.97147 | 8.75302 | 8.76693 | 8.49904 | 8.13567 | 8.53647 | 8.06919 | 8.06033 | 8.29538 | 20.0326 |  
+
 Which yeilds the following testing results.  
 <p align="center"> 
     <img src="./img/IBM_M1.png">
@@ -212,7 +215,9 @@ Moving forward to markov order 2, we obtain the following q table.
 | Prev Seq: "Positive", "Down"     | 1.49701 | 5.84822 | 1.38522 | 1.58129 | 1.71697 | 1.74671  | 1.58833 | 1.83914  | 1.59212 | 1.92212 | 1.68669 |
 | Prev Seq: "Positive", "Nuetral"  | 4.31702 | 3.85078 | 10.0363 | 3.83889 | 3.75574 | 3.99425  | 3.21814 | 4.12956  | 3.47642 | 3.56835 | 3.76362 |
 | Prev Seq: "Positive", "Positive" | 1.30869 | 1.09477 | 1.28534 | 1.12935 | 1.18675 | 0.935871 | 0.9024  | 0.860647 | 1.13079 | 1.10643 | 4.14827 |  
+
 Which yeilds the following performance over out testing period.  
+
 <p align="center"> 
     <img src="./img/IBM_M2.png">
 </p>  
