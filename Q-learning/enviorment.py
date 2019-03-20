@@ -42,13 +42,15 @@ class TradingEnv(gym.Env):
                     else: return_rate_list_temp[i] = 0
             return return_rate_list_temp
         elif self.source =='M2':
-            return_rates = self.stock_return_rate_history.loc[0:2]
-            # obs = np.append(return_rates.values[0], return_rates.values[1])
-            # for i in range(2):
-            #     if obs[i, 0] < self.quantization_ranges[0]: obs[i,0] = -1
-            #     elif obs[i, 0] < self.quantization_ranges[1]: obs[i, 0] = 1
-            #     else: obs[i, 0] = 0
-            return np.append(return_rates.values[0], return_rates.values[1])
+            prev_2 = self.stock_return_rate_history.loc[self.current_step-1]
+            prev_1 = self.stock_return_rate_history.loc[self.current_step]
+            obs = list(prev_2)
+            obs.extend(list(prev_1))
+            for i in range(len(obs)):
+                if obs[i] < self.quantization_ranges[0]: obs[i] = -1
+                elif obs[i] > self.quantization_ranges[1]: obs[i] = 1
+                else: obs[i] = 0
+            return obs
         else:
             return [0,0]
 
@@ -73,7 +75,7 @@ class TradingEnv(gym.Env):
         cash_for_stock_2 = (1-self.partition_ranges[action])*prev_capital
         new_val = ((self.stock_return_rate[0]+1)*cash_for_stock_1) + ((self.stock_return_rate[1]+1)*cash_for_stock_2)
         # reward function for new value
-        reward = math.log(new_val, 10)
+        reward = math.log(new_val, 2)
         return new_val, reward
 
     #Only neseisarry for non_discrete data - defaulted to -0.01, 0.0, 0.01
