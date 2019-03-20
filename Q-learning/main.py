@@ -75,12 +75,13 @@ def real_data():
     #must index at starting at 0
     train_data.index -= 1000
     # get a 3 level uniform quantizer of training data for observations
-    codebook, bounds = quantize(train_data['msft'].values)
+    codebook, bounds = quantize(train_data['ibm'].values)
     #init trading env
-    obs_space = [[-1, -1, 0], [-1, 0, 0], [-1, 1, 0],
-                  [0, -1, 0], [0, 0, 0], [0, 1, 0],
-                  [1, -1, 0], [1, 0, 0], [1, 1, 0]]
-    #obs_space = [[0,0]]
+    obs_space = [[-1, 0, -1, 0], [-1, 0, 0, 0], [-1, 0, 1, 0],
+                  [0, 0, -1, 0], [0, 0, 0, 0], [0, 0, 1, 0],
+                  [1, 0, -1, 0], [1, 0, 0, 0], [1, 0, 1, 0]]
+    # obs_space = [[0,0]]
+    # obs_space = [[-1, 0], [0, 0], [1, 0]]
     env = TradingEnv(train_data, init_capital=1000, is_discrete=False, source='M2')
     env.specify_quantization_ranges(bounds)
     #init Q table
