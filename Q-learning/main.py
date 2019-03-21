@@ -72,25 +72,28 @@ def test(test_env, Q):
 def real_data():
     print('For Real Data')
     train_data, test_data = split_data(round_return_rate(get_data()))
-    #must index at starting at 0
+    # Must index at starting at 0
     train_data.index -= 1000
-    # get a 3 level uniform quantizer of training data for observations
-    codebook, bounds = quantize(train_data['ibm'].values)
-    #init trading env
-    obs_space = [[-1, 0, -1, 0], [-1, 0, 0, 0], [-1, 0, 1, 0],
-                  [0, 0, -1, 0], [0, 0, 0, 0], [0, 0, 1, 0],
-                  [1, 0, -1, 0], [1, 0, 0, 0], [1, 0, 1, 0]]
-    # obs_space = [[0,0]]
-    # obs_space = [[-1, 0], [0, 0], [1, 0]]
-    env = TradingEnv(train_data, init_capital=1000, is_discrete=False, source='M2')
+    # Get a 3 level uniform quantizer of training data for observations
+    codebook, bounds = quantize(np.append(train_data['ibm'].values, train_data['msft'].values))
+    # init trading env
+    # obs_space = [[-1, 0, -1, 0], [-1, 0, 0, 0], [-1, 0, 1, 0],
+    #               [0, 0, -1, 0], [0, 0, 0, 0], [0, 0, 1, 0],
+    #               [1, 0, -1, 0], [1, 0, 0, 0], [1, 0, 1, 0]]
+    obs_space = [[0,0]]
+    #obs_space = define_observations(n_stocks=2, options=[-1,0,1])
+    env = TradingEnv(train_data, init_capital=1000, is_discrete=False, source='IID')
     env.specify_quantization_ranges(bounds)
     #init Q table
     Q = QLearningTable(actions=list(range(env.action_space_size)), observations=obs_space)
     Q.setup_table()
     #train method
     update(env, Q)
-    test_env = TradingEnv(test_data, init_capital=100, is_discrete=False, source='M2')
-    print(tabulate(Q.q_table, tablefmt="markdown"))
+    test_env = TradingEnv(test_data, init_capital=100, is_discrete=False, source='IID')
+    print(tabulate(Q.q_table, tablefmt="markdown", headers="keys"))
+    max_actions = Q.q_table.idxmax(axis=1).values
+    for i in Q.q_table.idxmax(axis=1).values:
+        print('maximizing action', env.actions[i])
     test(test_env, Q)
     return
 
@@ -121,6 +124,7 @@ def markov_data():
     #init q learning Q_table
     Q = QLearningTable(actions=list(range(env.action_space_size)), observations=train_data.drop_duplicates().values)
     Q.setup_table()
+
     #training method
     update(env, Q)
     test_env = TradingEnv(test_data, init_capital=100, is_discrete=True, source='M')

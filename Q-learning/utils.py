@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import os
+import itertools
 from sklearn.cluster import KMeans
 
 # main method to get the return rates for the three given stocks over time
@@ -8,7 +9,7 @@ def get_data():
     ibm = compute_return_rates(sort_by_recent(load_csv('../data/daily_IBM.csv')))
     msft = compute_return_rates(sort_by_recent(load_csv('../data/daily_MSFT.csv')))
     qcom = compute_return_rates(sort_by_recent(load_csv('../data/daily_QCOM.csv')))
-    data = pd.concat([msft], axis=1, keys=['msft'])
+    data = pd.concat([ibm, msft], axis=1, keys=['ibm', 'msft'])
     data['dummy'] = [0.0]*len(ibm)
     return data
 
@@ -194,3 +195,19 @@ def empirical_transition_matrix(data, bounds):
     P[1] /= np.sum(P, axis=1)[1]
     P[2] /= np.sum(P, axis=1)[2]
     return P
+
+
+def define_actions(n_stocks, options):
+    actions = []
+    for i in itertools.product(options, repeat=n_stocks):
+        if sum(i)==1: actions.append(i)
+    return actions
+
+# Given number of stocks and the options for those stocks (discluding the stock
+# representing the choice of not investing), returns the set of possible observations
+def define_observations(n_stocks, options):
+    obs = []
+    for i in itertools.product(options, repeat=n_stocks):
+        i = i + (0,)
+        obs.append(list(i))
+    return obs

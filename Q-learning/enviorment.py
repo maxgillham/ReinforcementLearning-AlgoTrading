@@ -18,11 +18,12 @@ class TradingEnv(gym.Env):
         self.stock_return_rate = None
         self.current_capital = None
         self.is_discrete = is_discrete
+        # Default quantization ranges
         self.quantization_ranges = [-0.01, 0.01]
         self.partition_ranges = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
-        # investment distribution (0/100), (10/90), (20/80), (30/70)...(100/0)
-        self.action_space_size = len(self.partition_ranges)
-        self.action_space = spaces.Discrete(self.action_space_size)
+        # Actions are combinations of partition values that sum to 1. ie for 3 stocks (.2, .3, .5)
+        self.actions = define_actions(self.n_stocks, self.partition_ranges)
+        self.action_space_size = len(self.actions)
         self._reset()
 
     def _reset(self):
@@ -70,15 +71,17 @@ class TradingEnv(gym.Env):
         return self._get_obs(), reward, done_flag
 
     def _invest(self, prev_capital, action):
-        #partition of cash for stock 1 and 2 respectivly
-        cash_for_stock_1 = self.partition_ranges[action]*prev_capital
-        cash_for_stock_2 = (1-self.partition_ranges[action])*prev_capital
-        new_val = ((self.stock_return_rate[0]+1)*cash_for_stock_1) + ((self.stock_return_rate[1]+1)*cash_for_stock_2)
-        # reward function for new value
-        reward = math.log(new_val, 2)
-        return new_val, reward
+        # cash for each stock
+        cash = []
+        value = 0
+        for i in self.actions[action]:
+            cash.append(prev_capital * i)
+        for j in range(self.n_stocks):
+            value += (self.stock_return_rate[j]+1)*cash[j]
+        reward = math.log(value, 2)
+        return value, reward
 
-    #Only neseisarry for non_discrete data - defaulted to -0.01, 0.0, 0.01
+    # Only neseisarry for non_discrete data - defaulted to -0.01, 0.0, 0.01
     def specify_quantization_ranges(self, ranges):
         self.quantization_ranges = ranges
         return
