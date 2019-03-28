@@ -10,32 +10,42 @@ from tabulate import tabulate
 from utils import *
 
 def update(env, Q):
+    """
+    The main method train the Q Learning agent.
+
+    Parameters
+    ----------
+    env: TradingEnv Obj
+        An instance the TradingEnv class parameratized to suit data
+    Q: QLearningTable Obj
+        An instance of the QLearningTable class parameratized to suit data
+    """
     try: episodes = int(sys.argv[2])
     except: episodes = 10
     episodes = 10
     ending_cap = []
-    #by default the training is set to be 100 episodes per training
+    # By default the training is set to be 100 episodes per training
     for episode in range(episodes):
         start = time.time()
         print('\n***Episoide Number*** ===>', episode)
-        # initial observation
+        # Initial observation
         observation = env._reset()
         Q.reset_epsilon()
         done = False
         while not done:
-            # RL choose action based on observation
+            # Choose action based on observation
             action = Q.choose_action(env._get_obs())
-            # RL take action and get next observation and reward
-            # return next step observation_, reward from env
+            # Take action and get next observation and reward
+            # Return next step observation_, reward from env
             observation_, reward, done = env._step(action)
 
-            # RL learn from this transition
+            # Update Q table this transition
             Q.learn(str(observation), action, reward, str(observation_))
 
-            # swap observation
+            # Swap observation
             observation = observation_
 
-            # break while loop when end of this episode
+            # Break while loop when end of this episode
             if done:
                 end = time.time()
                 print('Completed episoide in ', end - start, ' secconds.\n')
@@ -44,11 +54,21 @@ def update(env, Q):
     return
 
 def test(test_env, Q):
+    """
+    Testing Q learning performance by observing policy performance over testing
+    period. Plots capital obtained by following the best policy as per Q learning.
+
+    Parameters
+    ----------
+    env: TradingEnv Obj
+        An instance the TradingEnv class parameratized to suit data
+    Q: QLearningTable Obj
+        An instance of the QLearningTable class parameratized to suit data
+    """
     observation = test_env._reset()
     test_cap = []
     done = False
     while not done:
-
         # Get action with maximum future expected reward
         action = action = Q.q_table.loc[str(test_env._get_obs())].idxmax()
         # Apply action
@@ -62,7 +82,6 @@ def test(test_env, Q):
             break
 
     plt.scatter(np.arange(len(test_cap)), test_cap, marker='.', c='k' )
-
     plt.title('Capital Attained at Each Decision')
     plt.xlabel('Day')
     plt.ylabel('Capital Attained')
@@ -76,20 +95,16 @@ def real_data():
     train_data.index -= 1000
     # Get a 3 level uniform quantizer of training data for observations
     codebook, bounds = quantize(np.append(train_data['ibm'].values, train_data['msft'].values))
-    # init trading env
-    # obs_space = [[-1, 0, -1, 0], [-1, 0, 0, 0], [-1, 0, 1, 0],
-    #               [0, 0, -1, 0], [0, 0, 0, 0], [0, 0, 1, 0],
-    #               [1, 0, -1, 0], [1, 0, 0, 0], [1, 0, 1, 0]]
-    obs_space = [[0,0]]
-    #obs_space = define_observations(n_stocks=2, options=[-1,0,1])
-    env = TradingEnv(train_data, init_capital=1000, is_discrete=False, source='IID')
+    # Init trading env
+    obs_space = define_observations(n_stocks=2, options=[-1,0,1])
+    env = TradingEnv(train_data, init_capital=1000, is_discrete=False, source='M')
     env.specify_quantization_ranges(bounds)
-    #init Q table
+    # Init Q table
     Q = QLearningTable(actions=list(range(env.action_space_size)), observations=obs_space)
     Q.setup_table()
-    #train method
+    # Train method
     update(env, Q)
-    test_env = TradingEnv(test_data, init_capital=100, is_discrete=False, source='IID')
+    test_env = TradingEnv(test_data, init_capital=100, is_discrete=False, source='M')
     print(tabulate(Q.q_table, tablefmt="markdown", headers="keys"))
     max_actions = Q.q_table.idxmax(axis=1).values
     for i in Q.q_table.idxmax(axis=1).values:
@@ -99,15 +114,15 @@ def real_data():
 
 def iid_data():
     print('For IID Source')
-    #get train and test data for 5000 days where return rate is i.i.d
+    # Get train and test data for 5000 days where return rate is i.i.d
     train_data, test_data = split_data(create_iid(5000))
     test_data.index -= (train_data.shape[0] + test_data.shape[0])-1000
-    #init trading enviorment
+    # Init trading enviorment
     env = TradingEnv(train_data, init_capital=100, is_discrete = True, source='IID')
-    #init q learing table
+    # Init q learing table
     Q = QLearningTable(actions=list(range(env.action_space_size)), observations=[[0,0]])
     Q.setup_table()
-    #traing method
+    # Traing method
     update(env, Q)
     print(tabulate(Q.q_table, tablefmt="markdown", headers="keys"))
     test_env = TradingEnv(test_data, init_capital=100, is_discrete = True, source='IID')
@@ -116,16 +131,16 @@ def iid_data():
 
 def markov_data():
     print('For Markov Source')
-    #get train and test for 5000 days where return rates are dependent on previous day
+    # Get train and test for 5000 days where return rates are dependent on previous day
     train_data, test_data = split_data(create_markov(5000))
     test_data.index -= (train_data.shape[0] + test_data.shape[0]) - 1000
-    #init trading envioourment
+    # Init trading enviourment
     env = TradingEnv(train_data, init_capital=10000, is_discrete=True, source='M')
-    #init q learning Q_table
+    # Init q learning Q_table
     Q = QLearningTable(actions=list(range(env.action_space_size)), observations=train_data.drop_duplicates().values)
     Q.setup_table()
 
-    #training method
+    # Training method
     update(env, Q)
     test_env = TradingEnv(test_data, init_capital=100, is_discrete=True, source='M')
     print(tabulate(Q.q_table, tablefmt="markdown", headers="keys"))
@@ -134,14 +149,14 @@ def markov_data():
 
 def markov_data2():
     print('For Markov Memory 2 Source')
-    #get train and test for 5000 days where return rates are dependent on previous day
+    # Get train and test for 5000 days where return rates are dependent on previous day
     train_data, test_data = split_data(create_markov_memory_2(5000))
     test_data.index -= (train_data.shape[0] + test_data.shape[0]) - 1000
-    #init trading envioourment
+    # Init trading envioronment
     env = TradingEnv(train_data, init_capital=100, is_discrete=True, source='M2')
-    #init q learning Q_table
+    # Init q learning Q_table
     Q = QLearningTable(actions=list(range(env.action_space_size)), observations=[[0,0]])
-    #training method
+    # Training method
     update(env, Q)
     test_env = TradingEnv(test_data, init_capital=100, is_discrete=True, source='M2')
     print(tabulate(Q.q_table, tablefmt="markdown", headers="keys"))
@@ -150,14 +165,14 @@ def markov_data2():
 
 def mix():
     print('For a mixture of Markov and IID Source')
-    #get train and test data for 5000 days
+    # Get train and test data for 5000 days
     train_data, test_data = split_data(create_markov_iid_mix(5000))
     test_data.index -= (train_data.shape[0] + test_data.shape[0]) - 1000
-    #init trading env, is not discrete for iid from np uniform module
+    # Init trading env, is not discrete for iid from np uniform module
     env = TradingEnv(train_data, init_capital=100, is_discrete=False, source='mix')
-    #init q learning table
+    # Init q learning table
     Q = QLearningTable(actions=list(range(env.action_space_size)))
-    #training method
+    # Training method
     update(env, Q)
     test_env = TradingEnv(test_data, init_capital=100, is_discrete=False, source='mix')
     print(tabulate(Q.q_table, tablefmt="markdown", headers="keys"))

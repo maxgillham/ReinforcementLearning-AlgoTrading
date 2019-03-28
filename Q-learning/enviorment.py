@@ -1,15 +1,29 @@
-import gym
 import math
 import os
 import numpy as np
 
-from gym import spaces
 from utils import *
 
-class TradingEnv(gym.Env):
+class TradingEnv:
     def __init__(self, train_data, init_capital, is_discrete, source):
+        """
+        Initialize instance of the TradingEnv.
+
+        Parameters
+        ----------
+        train_data: pandas.DataFrame
+            Training set of daily return rates for a series of assets.
+        init_capital: int
+            The initial capital to begin episoides with.
+        is_discrete: bool
+            True if the return rates are quantized into a finite number of bins
+            and False otherwise.
+        source: str
+            The type of source, or how the enviorment treats the source.  M for
+            markov1, M2 for markov2, IID, Real
+        """
         self.stock_return_rate_history = train_data
-        self.n_stocks = train_data.shape[1] #should be only 2
+        self.n_stocks = train_data.shape[1]
         self.n_steps = train_data.shape[0]
         self.source = source
         self.init_capital = init_capital
@@ -27,13 +41,27 @@ class TradingEnv(gym.Env):
         self._reset()
 
     def _reset(self):
-        if self.source == 'M2': self.current_step = 2 #if mem 2 we need to to start at 2 for obs space
+        """
+        Reset the capital to initial capital and current step. Used when a new
+        episode begins.
+        """
+        # If mem 2 we need to to start at 2 for obs space
+        if self.source == 'M2': self.current_step = 2
         else: self.current_step = 1
         self.stock_return_rate = self.stock_return_rate_history.loc[self.current_step]
         self.current_capital = self.init_capital
         return self._get_obs()
 
     def _get_obs(self):
+        """
+        Returns the current observation to be seen by the agent. If return rates
+        are observed as markov, previous values are included in observation.
+
+        Returns
+        -------
+        obs = list[]
+            The observation at current time step.
+        """
         if self.source == 'Real'  or self.source == 'M':
             return_rate_list_temp = list(self.stock_return_rate)
             if not self.is_discrete:
@@ -56,11 +84,30 @@ class TradingEnv(gym.Env):
             return [0,0]
 
     def _step(self, action):
-        #previous capital is now capital before action
+        """
+        Update current capital, current step, done flag and compute reward for
+        each transition, given a control action.
+
+        Parameters
+        ----------
+        action: int
+            The index of the chosen control action in the list of feasible
+            control actions
+
+        Returns
+        -------
+        obs: list[]
+            Observation after completing action
+        reward: float
+            Reward for action
+        done_flag: bool
+            Indicating if the end of training data is reached.
+        """
+        # Previous capital is now capital before action
         prev_capital = self.current_capital
-        #increment time step for data
+        # Increment time step for data
         self.current_step += 1
-        #return rate is return rate for that day
+        # Return rate is return rate for that day
         self.stock_return_rate = self.stock_return_rate_history.loc[self.current_step]
         new_val, reward = self._invest(prev_capital, action)
         self.current_capital = new_val
@@ -71,7 +118,25 @@ class TradingEnv(gym.Env):
         return self._get_obs(), reward, done_flag
 
     def _invest(self, prev_capital, action):
-        # cash for each stock
+        """
+        Invest capital according to the partition determined by the control action
+        for 1 time step and compute reward.
+
+        Parameters
+        ----------
+        prev_capital: float
+            Previous capital before action.
+        action: int
+            Index of control action in list of actions
+
+        Returns
+        -------
+        value: float
+            Portfolio value after executing the previous action.
+        reward: float
+            Reward for executing action.
+        """
+        # Cash for each stock
         cash = []
         value = 0
         for i in self.actions[action]:

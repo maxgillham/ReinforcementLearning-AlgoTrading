@@ -5,6 +5,7 @@ class QLearningTable:
     def __init__(self, actions, observations):
         """
         Initialize instance of the QLearningTable.
+
         Parameters
         ----------
         actions: list[int]
@@ -64,6 +65,21 @@ class QLearningTable:
         return action
 
     def learn(self, s, a, r, s_):
+        """
+        Update the Q table according to the Bellman Eqn for previous state, action
+        reward and current state.
+
+        Parameters
+        ----------
+        s: str
+            The previos state.
+        a: int
+            The index of the previos action.
+        r: float
+            The reward for the previos state action pair.
+        s_: str
+            The (now) current state
+        """
         #self.check_state_exist(s_)
         q_predict = self.q_table.loc[s, a]
         q_target = r + (self.gamma*self.q_table.loc[s_].max())
