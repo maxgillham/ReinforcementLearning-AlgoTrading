@@ -1,14 +1,18 @@
-"""
-This part of code is the Q learning brain, which is a brain of the agent.
-All decisions are made in here.
-"""
-
 import numpy as np
 import pandas as pd
 
 class QLearningTable:
     def __init__(self, actions, observations):
-        self.actions = actions  # a list
+        """
+        Initialize instance of the QLearningTable.
+        Parameters
+        ----------
+        actions: list[int]
+            The indicies of all feasible control actions defined in the TradingEnv.
+        observations: list[]
+            The set of all possible observations seen by the agent.
+        """
+        self.actions = actions
         self.lr = 0.001
         self.gamma = 0.85
         self.epsilon = 1
@@ -18,6 +22,10 @@ class QLearningTable:
         self.observations = observations
 
     def setup_table(self):
+        """
+        Setup Q table - initilize all state action pairs to be 0.
+        Rows are possible states and columns are control actions.
+        """
         for obs in self.observations:
             self.q_table = self.q_table.append(
                 pd.Series(
@@ -28,17 +36,30 @@ class QLearningTable:
             )
         return
 
+    # Reset epsilon to 1
     def reset_epsilon(self):
         self.epsilon = 1
         return
 
     def choose_action(self, observation):
-        #self.check_state_exist(observation)
-        # choose "current best" action
+        """
+        Choose a control action to persue for a given state.
+
+        Parameters
+        ----------
+        observation: list
+            The current observation.
+
+        Returns
+        -------
+        actions: int
+            The index in the set of actions list to execute.
+        """
+        # Choose "current best" action
         if np.random.rand() > self.epsilon: action = self.q_table.loc[str(observation)].idxmax()
-        # choose random action
+        # Choose random action
         else: action = np.random.choice(self.actions)
-        #decay exploration rate if not below min exploration rate
+        # Decay exploration rate if not below min exploration rate
         if self.epsilon > self.epsilon_min: self.epsilon *= self.epsilon_decay
         return action
 
@@ -48,6 +69,7 @@ class QLearningTable:
         q_target = r + (self.gamma*self.q_table.loc[s_].max())
         self.q_table.loc[s, a] += self.lr * (q_target - q_predict)  # update
 
+    # Depreciated.
     def check_state_exist(self, state):
         if str(state) not in self.q_table.index:
             # append new state to q table
