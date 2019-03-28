@@ -347,7 +347,7 @@ def define_observations(n_stocks, options):
     -------
     obs: list[]
 
-    """"
+    """
     obs = []
     for i in itertools.product(options, repeat=n_stocks):
         i = i + (0,)
